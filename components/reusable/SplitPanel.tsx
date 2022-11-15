@@ -19,6 +19,7 @@ export default function SplitPanel({children}) {
             {children.filter(c => c && c).reduce((accum, val, index) => [
                 ...accum,
                 <ReflexElement
+                    key={index*2}
                     style={{
                         flexDirection: 'column',
                     }}
@@ -33,7 +34,7 @@ export default function SplitPanel({children}) {
                     </div>
                 </ReflexElement>,
 
-                index < (children.length-1) && <ReflexSplitter className="reflex-splitter-override" propagate={true}/>
+                index < (children.length-1) && <ReflexSplitter className="reflex-splitter-override" propagate={true} key={index*2 + 1}/>
             ], [])}
         </ReflexContainer>
     )

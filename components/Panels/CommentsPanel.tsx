@@ -27,13 +27,11 @@ export default function CommentsPanel({permalink}) {
 
             }}
         >
-            {comments?.children?.map(comment => (
+            {comments?.children?.map((comment, index) => (
                 <EntryComment
                     comment={comment}
-                    key={comment?.data?.permalink}
+                    key={comment?.data?.permalink ?? index}
                 />
-                // <div>
-                // </div>
             )) ?? []}
         </Listing>
     </div>

@@ -25,12 +25,13 @@ export default function ListingPanel({listing, posts, setPage, setCurrentPost, c
             id='ListingPanelListing'
             // sourceUrl={`${searchType}/${subreddit}`}            
         >
-            {Object.values(posts).filter((p:any) => p.kind==='t3').map((post: any) => (
+            {Object.values(posts).filter((p:any) => p.kind==='t3').map((post: any, index) => (
                 <EntryPost 
                     post={post} 
                     isCurrent={(currentPost?.permalink ?? '') === post.data.permalink} 
                     setCurrentPost={() => setCurrentPost(post.data)} 
                     postType={searchType}
+                    key={post?.data?.permalink ?? index}
                 />
                 
                 // <div 

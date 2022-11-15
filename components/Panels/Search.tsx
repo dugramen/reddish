@@ -124,6 +124,7 @@ export default function Search({setSubreddit, setPrefix, setCurrentPost, listing
                 {Object.entries(list).map(([key, value]: any) => {
                     if (type===null) {
                         return <EntryPost 
+                            key={key}
                             post={value} 
                             isCurrent={key===current} 
                             setCurrentPost={(val) => {
@@ -136,6 +137,7 @@ export default function Search({setSubreddit, setPrefix, setCurrentPost, listing
                     }
 
                     return <div 
+                        key={key}
                         className={`${st.article} ${key === current && st.current}`}
                         onClick={() => {
                             setCurrent(key)

@@ -2,7 +2,8 @@ import React from "react";
 import s_list from '../../styles/Listing.module.scss'
 import s_entr from '../../styles/Entry.module.scss'
 
-export default function EntryComment({comment}) {
+export default function EntryComment(props) {
+    const {comment} = props
     const styles = {...s_list, ...s_entr}
     const stopPropagation = (e) => e.stopPropagation()
 
@@ -10,6 +11,7 @@ export default function EntryComment({comment}) {
 
     return (
     <div 
+        key={comment?.data?.permalink}
         className={`${styles.article} ${styles.comment}  ${collapsed && styles.collapsed}`}
         onClick={e => {
             stopPropagation(e)
