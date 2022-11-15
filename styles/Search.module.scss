@@ -1,0 +1,55 @@
+@use './utils.scss';
+
+// .SearchPanel {
+//     // display: flex;
+//     // flex-direction: column;
+//     // align-items: stretch;
+//     // justify-content: stretch;c
+
+//     // &>* {
+//     //     background-color: green;
+//     // }
+// }
+
+.SearchList {
+    overflow: auto;
+    // max-height: 100%;
+    // @include utils.no-scrollbar()
+}
+
+.searchType {
+    outline: none;
+    border: none;
+    // background: white;
+    background: hsl(0, 0%, 10%);
+    // border-radius: 80px;
+    // padding: 4px 8px;
+    
+    &:hover {
+        background: hsl(0, 0%, 20%);
+    }
+
+    &.currentButton {
+        // background: hsl(0, 0%, 80%);
+        // background: white;
+        // color: black;
+        border-bottom: 2px solid hsl(0, 0%, 75%);
+    }
+    
+    // &:active {
+    //     background: rebeccapurple;
+    // }
+}
+
+// .article {
+    
+//     padding: 16px;
+//     cursor: pointer;
+
+//     display: flex;
+//     flex-direction: row;
+//     gap: 20px;
+//     transition: .1s;
+//     border: 0px solid white;
+//     $small-size: .85rem;
+// }
