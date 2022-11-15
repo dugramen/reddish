@@ -1,0 +1,143 @@
+html,
+body {
+  padding: 0;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+* {
+  box-sizing: border-box;
+  letter-spacing: .5px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-color: black;
+  }
+
+  html {
+    color-scheme: dark;
+  }
+  body {
+    color: white;
+    background: var(--bg-color);
+  }
+
+  button {
+    cursor: pointer;
+    padding: 4px 8px;
+  }
+}
+
+.CardPage {
+  background-color: var(--bg-color);
+  position: fixed;
+  bottom: 0;
+  top: 0;
+  right: 0;
+  left: 33vw;
+  transition: .3s;
+  padding: 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  overflow: scroll;
+  
+  .content-container {
+    display: flex;
+    flex-direction: column;
+    // align-items: center;
+
+    min-height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    overflow-y: scroll;
+    overflow-x: hidden;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  &.hidden {
+    transform: translateY(105%);
+  }
+
+  h1 {
+    align-self: center;
+  }
+
+  .close-button {
+    border: none;
+    border-radius: 12px;
+    color: black;
+    align-self: flex-end;
+    
+    &:hover {
+      background-color: var(--color);
+      color: white;
+    }
+  }
+
+}
+
+.post-image {
+  object-fit: contain;
+  min-height: 0;
+  min-width: 0;
+  max-width: 100%;
+  align-self: center;
+}
+
+.reflex-splitter-override {
+  width: 12px !important;
+  height: 100vh !important;
+
+  border: none !important;
+  background: black !important;
+  transition: .2s !important;
+
+  &:hover {
+    background: lightgray !important;
+  }
+}
+
+input {
+  background: none;
+  color: white;
+  border: none;
+  border-bottom: 2px solid hsla(0, 0%, 100%, 0);
+  border-radius: 0;
+
+  outline: none;
+  padding: 8px 12px;
+  padding-top: 10px;
+  margin: 8px;
+  margin-top: 16;
+  transition: .3s;
+  opacity: .75;
+
+  &:hover {
+    // border: none;
+    // border-bottom-color: hsla(0, 0%, 100%, 1);
+    background: hsl(0, 0%, 20%);
+    opacity: 1;
+  }
+  &:focus {
+    border-bottom-color: white;
+  }
+}
+
+a {
+  text-decoration: underline;
+  &:hover {
+  }
+}

@@ -1,0 +1,131 @@
+@use './utils.scss';
+
+.listingPanel {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  // max-width: 50vw;
+}
+
+.articleContainer {
+  // max-height: 100vh;
+  // width: 50vw;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  // align-self: flex-start;
+  align-items: stretch;
+  // max-height: 100vh;
+  overflow-y: scroll;
+  @include utils.no-scrollbar();
+}
+
+.article {
+  padding: 16px;
+  cursor: pointer;
+
+  display: flex;
+  flex-direction: row;
+  // flex-wrap: wrap;
+  gap: 20px;
+  transition: .1s;
+  border: 0px solid white;
+  $small-size: .85rem;
+
+  &:hover {
+    border-left-width: 4px;
+    background-color: hsl(0, 0%, 100%, .2);
+    transition: transform border-left-width .2s;
+  }
+  &:active {
+    transform: scale(.9);
+  }
+  &.current {
+    border-right-width: 4px;
+    border-left-width: 4px;
+  }
+
+  @mixin subtext {
+    font-size: $small-size;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    opacity: .75;
+    overflow: hidden;
+    overflow-wrap: break-word;
+    
+    // & * {
+    //   // background-color: rebeccapurple;
+    //   // word-wrap: break-word;
+    //   // text-overflow: clip;
+    //   // overflow-x: hidden;
+    //   // overflow-wrap: break-word;
+    // }
+  }
+
+  .subtext {
+    @include subtext();
+  }
+
+  .postFooter {
+    @include subtext();
+    flex-direction: column;
+    // background-color: rebeccapurple;
+    gap: 8px;
+    margin-left: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
+    overflow: visible;
+
+    .comments {
+      display: flex;
+      flex-direction: row;
+      gap: 4px;
+      img {
+        width: $small-size;
+        height: $small-size;
+        transform: translateY(calc($small-size / 5));
+        filter: invert(1);
+      }
+    }
+  }
+
+  .postLabelContainer {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-right: auto;
+    min-width: 0;
+
+
+    .postHeader {
+      @include subtext();
+      & > *:not(:first-child):before {
+        content: ' • ';
+        white-space: pre;
+      }
+    }
+
+
+    
+    .title {
+      font-weight: bold;
+    }
+  }
+  
+}
+
+.positive {
+  color: lightblue;
+  &::before {
+    content: '+';
+  }
+}
+.negative {
+  color: lightcoral;
+  &::before {
+    content: '-';
+  }
+}
