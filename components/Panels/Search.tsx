@@ -66,6 +66,7 @@ export default function Search({setSubreddit, setPrefix, setCurrentPost, listing
         <input 
             value={inputVal} 
             onChange={(e) => setInputVal(e.target.value)} 
+            placeholder="Search"
             // onSubmit={} 
         />
 
@@ -91,11 +92,12 @@ export default function Search({setSubreddit, setPrefix, setCurrentPost, listing
                 Post
             </button>
 
-            <label>
+            <label className="safe-search">
                 <input
                     type={'checkbox'}
                     checked={safeSearch}
                     onChange={e => setSafeSearch(e.target.checked)}
+                    style={{whiteSpace: 'nowrap'}}
                 />
                 Safe Search
             </label>

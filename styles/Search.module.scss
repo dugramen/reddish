@@ -17,6 +17,11 @@
     // @include utils.no-scrollbar()
 }
 
+.safe-search {
+    white-space: nowrap;
+    background-color: rebeccapurple;
+}
+
 .searchType {
     outline: none;
     border: none;

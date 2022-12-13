@@ -13,7 +13,6 @@ import {
 export default function SplitPanel({children}) {
     const [expanded, setExpanded] = React.useState(true)
 
-    console.log(children)
     return (
         <ReflexContainer orientation="vertical">
             {children.filter(c => c && c).reduce((accum, val, index) => [
