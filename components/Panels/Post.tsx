@@ -3,6 +3,7 @@ import Card from "../Card";
 import {CardProps} from '../Card';
 import parse from 'html-react-parser'
 import styles from '../../styles/Post.module.scss'
+import ReactPlayer from 'react-player'
 
 interface Props extends CardProps {
     currentPost: {
@@ -13,7 +14,6 @@ interface Props extends CardProps {
 
 export default function Post(props: Props) {
     const {currentPost, setCurrentPost} = props
-    console.log(currentPost && 'hush')
     return (
     <div
         className={styles.postContainer}
@@ -24,10 +24,22 @@ export default function Post(props: Props) {
 
         {parse(currentPost?.selftext_html ?? '')}
 
-        {currentPost?.media_embed?.content &&
-        <div className={styles.embeddedContent}>
-            {parse(currentPost?.media_embed?.content ?? '')}
-        </div>
+        {(currentPost?.media_embed?.content &&
+            <div className={styles.embeddedContent}>
+                {parse(currentPost?.media_embed?.content ?? '')}
+            </div>) 
+        ?? (
+            currentPost?.secure_media?.reddit_video?.fallback_url && 
+            <div className={styles.videoPlayer}>
+                <ReactPlayer
+                    // className={styles.videoPlayer}
+                    url={currentPost.secure_media?.reddit_video?.fallback_url}
+                    controls={true}
+                    muted={true}
+                    playing={true}
+                />
+            </div>
+        )
         }
 
         {

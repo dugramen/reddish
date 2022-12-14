@@ -90,12 +90,13 @@ export default function Home() {
         {isListingVisible && ListingComponent}
         
         { currentPost && 
-        <div className={`${styles.Panel}`} id='PostPanel'>
+        // <div className={`${styles.Panel}`} id='PostPanel'>
           <Post
             currentPost={currentPost}
             setCurrentPost={setCurrentPost}
           />
-        </div>}
+        // </div>
+        }
 
         { currentPost && <CommentsPanel 
           permalink={currentPost?.permalink}        
