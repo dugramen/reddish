@@ -13,12 +13,22 @@
 .PanelContainer {
   display: flex;
   flex-direction: column;
-  max-height: 100vh;
+  max-height: calc(100vh - 32px);
   max-width: 100vw;
+  height: 100%;
+
+  align-self: stretch;
+
+  box-sizing: border-box;
+  margin: 16px 8px;
+  padding: 8px;
+  background-color: hsl(0, 0%, 100%, .1);
+  border-radius: 20px;
 
   & > * {
     display: flex;
     flex-direction: column;
+    max-height: 100%;
   }
 
   .Panel {
@@ -31,9 +41,9 @@
     @include utils.no-scrollbar();
     // @include no-scrollbar();
   }
-  &>* {
-    height: 100vh;
-  }
+  // &>* {
+  //   height: 100vh;
+  // }
   
   // .PostPanel {
     

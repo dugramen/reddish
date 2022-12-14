@@ -24,10 +24,6 @@ export default function Card(props: CardProps) {
         }
     }, [props.isShown])
 
-    // if (!shouldRender) {
-    //     return <div className="nothing-here"></div>
-    // }
-
     return (
     <div className={`CardPage ${props.className} ${props.isShown? 'shown': 'hidden'}`}>
         <button className={`close-button ${props.isMobile && 'mobile'}`} onClick={props.onClose}>

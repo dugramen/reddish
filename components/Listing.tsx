@@ -34,7 +34,7 @@ export default function Listing({next, children, sourceUrl, id, className, style
             next={next}
             hasMore={true}
             scrollableTarget={id}
-            loader={<h4>Loading...</h4>}
+            loader={<h4></h4>}
             endMessage={
                 <p style={{ textAlign: 'center' }}>
                     <b>Yay! You have seen it all</b>

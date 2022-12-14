@@ -32,6 +32,7 @@ a {
   button {
     cursor: pointer;
     padding: 4px 8px;
+    color: lightgray;
   }
 }
 
@@ -106,7 +107,7 @@ a {
   transition: .2s !important;
 
   &:hover {
-    background: lightgray !important;
+    background: gray !important;
   }
 }
 
@@ -144,4 +145,30 @@ a {
 
 .safe-search {
   white-space: nowrap;
+}
+
+.reflex-container {
+  align-items: stretch;
+
+  & > .reflex-element {
+    display: flex;
+    height: auto;
+  }
+}
+
+img {
+  border-radius: 8px;
+}
+
+h1 {
+  font-size: 2rem;
+  font-weight: 300;
+}
+
+// h2 {
+//   font-weight: 200;
+// }
+
+* {
+  font-weight: 200;
 }

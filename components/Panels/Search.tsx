@@ -104,19 +104,6 @@ export default function Search({setSubreddit, setPrefix, setCurrentPost, listing
         </div>
 
         {
-            // <div 
-            //     className={st.SearchList}
-            //     id='search-scroll-container'
-            // >
-            //     <InfiniteScroll 
-            //         next={() => {
-            //             setPage(`after=${searchResults?.data?.after}`)
-            //         }}
-            //         hasMore={true} 
-            //         loader={undefined} 
-            //         dataLength={Object.keys(list).length ?? 0}
-            //         scrollableTarget='search-scroll-container'
-            //     >
             <Listing 
                 // dataLength={undefined} 
                 next={() => setPage(`after=${searchResults?.data?.after}`)} 
@@ -172,8 +159,6 @@ export default function Search({setSubreddit, setPrefix, setCurrentPost, listing
                     </div>
                 })}
             </Listing>
-            //     </InfiniteScroll>
-            // </div>
         }
     </div>
     )

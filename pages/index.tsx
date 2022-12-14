@@ -89,40 +89,18 @@ export default function Home() {
 
         {isListingVisible && ListingComponent}
         
+        { currentPost && 
         <div className={`${styles.Panel}`} id='PostPanel'>
           <Post
             currentPost={currentPost}
             setCurrentPost={setCurrentPost}
           />
-        </div>
+        </div>}
 
-        <CommentsPanel 
+        { currentPost && <CommentsPanel 
           permalink={currentPost?.permalink}        
-        />
+        />}
       </SplitPanel>
-
-      {/* <div className={styles.PanelContainer}>
-        <Search 
-          setSubreddit={setSubreddit}
-          setPrefix={setSearchType}
-          setCurrentPost={setCurrentPost}
-          listingComponent={ListingComponent}
-          setIsListingVisible={setIsListingVisible}
-        />
-
-        {isListingVisible && ListingComponent}
-        
-        <div className={`${styles.Panel}`} id='PostPanel'>
-          <Post
-            currentPost={currentPost}
-            setCurrentPost={setCurrentPost}
-          />
-        </div>
-
-        <CommentsPanel 
-          permalink={currentPost?.permalink}        
-        />
-      </div> */}
       
     </div>
   )

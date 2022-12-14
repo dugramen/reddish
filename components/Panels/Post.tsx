@@ -13,6 +13,7 @@ interface Props extends CardProps {
 
 export default function Post(props: Props) {
     const {currentPost, setCurrentPost} = props
+    console.log(currentPost && 'hush')
     return (
     <div
         className={styles.postContainer}

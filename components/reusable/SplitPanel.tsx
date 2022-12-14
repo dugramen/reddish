@@ -21,6 +21,7 @@ export default function SplitPanel({children}) {
                     key={index*2}
                     style={{
                         flexDirection: 'column',
+                        height: 'auto'
                     }}
                 >
                     <div
@@ -33,7 +34,12 @@ export default function SplitPanel({children}) {
                     </div>
                 </ReflexElement>,
 
-                index < (children.length-1) && <ReflexSplitter className="reflex-splitter-override" propagate={true} key={index*2 + 1}/>
+                index < (children.length-1) && <ReflexSplitter 
+                    className="reflex-splitter-override"   
+                    propagate={true} 
+                    key={index*2 + 1}
+                    
+                />
             ], [])}
         </ReflexContainer>
     )

@@ -1,6 +1,7 @@
 import React from "react";
 import s_list from '../../styles/Listing.module.scss'
 import s_entr from '../../styles/Entry.module.scss'
+import parse from 'html-react-parser'
 
 export default function EntryComment(props) {
     const {comment} = props
@@ -52,7 +53,7 @@ export default function EntryComment(props) {
                 && comment?.data?.replies?.data?.children?.map(reply => (
                     reply?.kind === 't1'
                     ? <EntryComment comment={reply} key={reply?.data?.permalink}/>
-                    : 'Show More'
+                    : '...'
                 ))
                 }
             </div>
