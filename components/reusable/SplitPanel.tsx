@@ -57,6 +57,7 @@ export default function SplitPanel(props: Props) {
                             onClick={() => {
                                 setCurrentPanel(index)
                             }}
+                            key={child.props.name ?? index}
                         >
                             {' > ' + child.props.name}
                         </button>
@@ -68,10 +69,12 @@ export default function SplitPanel(props: Props) {
                     minHeight: '0',
                     transform: `translateX(calc(-100vw * ${currentPanel}))`
                 }}>
-                    {filteredChildren.map(child => (
+                    {filteredChildren.map((child, index) => (
                         <div style={{
                             minWidth: '100vw',
-                        }}>
+                        }}
+                            key={child.props.name ?? index}
+                        >
                             {child}
                         </div>
                     ))}
