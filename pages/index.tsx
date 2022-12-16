@@ -22,22 +22,6 @@ export default function Home() {
   const [posts, setPosts] = React.useState({})
 
   const [currentPost, setCurrentPost] = React.useState<any>(null)
-  // const [postData, setPostData] = React.useState(null)
-
-  // function fetchData(url: string, setter: (a: any) => any) {
-  //   fetch("http://localhost:5000/" + url)
-  //     .then(res => {
-  //       if (res.ok) {
-  //         return res.json()
-  //       }
-  //       throw new Error('Something wrong')
-  //     })
-  //     .then(data => {
-  //       console.log(data)
-  //       setter(data)
-  //     })
-  //     .catch(error => {})
-  // }
 
   function getNewListing(searchType:any, subreddit:any, page:any, p = posts) {
     setListing([])
@@ -65,42 +49,47 @@ export default function Home() {
     listing={listing} 
     posts={posts} 
     setPage={setPage} 
-    setCurrentPost={setCurrentPost}      
+    setCurrentPost={(val) => {setCurrentPost(val); setCurrentPanel(2)}}      
     currentPost={currentPost}
     searchType={searchType} 
     setSearchType={setSearchType} 
     setSubreddit={setSubreddit} 
     subreddit={subreddit}
+    name={searchType === 'u/' ? 'User' : 'Subreddit'}
   />
 
   return (
     <div className={styles.page}>
 
-
-
-      <SplitPanel>
+      <SplitPanel 
+        currentPanel={currentPanel} 
+        setCurrentPanel={setCurrentPanel}        
+      >
         <Search 
-          setSubreddit={setSubreddit}
+          setSubreddit={(val) => {setSubreddit(val); setCurrentPanel(1)}}
           setPrefix={setSearchType}
-          setCurrentPost={setCurrentPost}
+          setCurrentPost={(val) => {setCurrentPost(val); setCurrentPanel(isListingVisible ? 2 : 1)}}
           listingComponent={ListingComponent}
           setIsListingVisible={setIsListingVisible}
+          name="Search"
         />
 
-        {isListingVisible && ListingComponent}
+        { isListingVisible && ListingComponent }
         
         { currentPost && 
-        // <div className={`${styles.Panel}`} id='PostPanel'>
           <Post
             currentPost={currentPost}
             setCurrentPost={setCurrentPost}
+            name="Post"
           />
-        // </div>
         }
 
-        { currentPost && <CommentsPanel 
-          permalink={currentPost?.permalink}        
-        />}
+        { currentPost && 
+          <CommentsPanel 
+            permalink={currentPost?.permalink}
+            name="Comments" 
+          />
+        }
       </SplitPanel>
       
     </div>

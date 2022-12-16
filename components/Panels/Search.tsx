@@ -6,7 +6,12 @@ import Listing from "../Listing";
 
 import { fetchData } from "../utils";
 
-export default function Search({setSubreddit, setPrefix, setCurrentPost, listingComponent, setIsListingVisible}) {
+// interface Props {
+//     setSubreddit, setPrefix, setCurrentPost, listingComponent, setIsListingVisible,
+//     [a: string | symbol | number]: any,
+// }
+
+export default function Search({setSubreddit, setPrefix, setCurrentPost, listingComponent, setIsListingVisible, name}) {
     const [inputVal, setInputVal] = React.useState('')
     const [searchResults, setSearchResults] = React.useState<any>()
     const [list, setList] = React.useState<any>({})
@@ -47,7 +52,7 @@ export default function Search({setSubreddit, setPrefix, setCurrentPost, listing
 
     React.useEffect(() => {
         type===null && Object.keys(list).length > 0 && current && (() => {
-            setCurrentPost(list?.[current]?.data)
+            // setCurrentPost(list?.[current]?.data)
         })()
     }, [type, current])
 
@@ -62,7 +67,7 @@ export default function Search({setSubreddit, setPrefix, setCurrentPost, listing
     }, [inputVal, type, safeSearch])
 
     return (
-    <div className={st.SearchPanel}>
+    <div className={st.SearchPanel + ' PanelSection'} id='Search'>
         <input 
             value={inputVal} 
             onChange={(e) => setInputVal(e.target.value)} 

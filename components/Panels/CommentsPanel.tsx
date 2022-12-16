@@ -3,7 +3,7 @@ import EntryComment from "../entries/EntryComment";
 import Listing from "../Listing";
 import { fetchData } from "../utils";
 
-export default function CommentsPanel({permalink}) {
+export default function CommentsPanel({permalink, name}) {
     const [comments, setComments] = React.useState<any>()
 
     React.useEffect(() => {
@@ -16,7 +16,7 @@ export default function CommentsPanel({permalink}) {
     }, [permalink])
 
     return (
-    <div style={{
+    <div className=" PanelSection" id='Comments' style={{
         // paddingRight: '12px'
     }}>
         <Listing 
