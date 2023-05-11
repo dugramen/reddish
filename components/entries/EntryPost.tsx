@@ -15,8 +15,8 @@ export default function EntryPost({post, isCurrent, setCurrentPost, postType}) {
         {post.data.preview?.images.length > 0 && 
         <img
             src={(post.data.preview.images[0].source.url).replaceAll('amp;', '')}
-            width={100}
-            height={100}
+            width={48}
+            height={48}
             alt='preview'
         />}
 
@@ -43,23 +43,23 @@ export default function EntryPost({post, isCurrent, setCurrentPost, postType}) {
                 {post.data.title}
             </div>
 
+            <div className={styles.postFooter}>
+                <div className={`${styles.upvotes} ${
+                    post.data.score > 0 ? styles.positive
+                    : post.data.score < 0 ? styles.negative : ''}`}>
+                    {post.data.score}
+                </div>
+
+                <div className={styles.comments}>
+                    <img 
+                        src="/comments.svg" 
+                        alt="comments.svg"            
+                    />
+                    {post.data.num_comments}
+                </div>
+            </div>
         </div>
 
-        <div className={styles.postFooter}>
-            <div className={`${styles.upvotes} ${
-                post.data.score > 0 ? styles.positive
-                : post.data.score < 0 ? styles.negative : ''}`}>
-                {post.data.score}
-            </div>
-
-            <div className={styles.comments}>
-                <img 
-                    src="/comments.svg" 
-                    alt="comments.svg"            
-                />
-                {post.data.num_comments}
-            </div>
-        </div>
 
     </div>
     )

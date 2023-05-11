@@ -11,40 +11,49 @@
 //     // }
 // }
 
-.SearchList {
-    overflow: auto;
-    // max-height: 100%;
-    // @include utils.no-scrollbar()
-}
+.SearchPanel {
+    // height: 100vh;
 
-.safe-search {
-    white-space: nowrap;
-    background-color: rebeccapurple;
-}
-
-.searchType {
-    outline: none;
-    border: none;
-    // background: white;
-    background: hsl(0, 0%, 10%);
-    // border-radius: 80px;
-    // padding: 4px 8px;
-    
-    &:hover {
-        background: hsl(0, 0%, 20%);
+    .searchBar {
+        min-width: 0;
+        width: 100%;
     }
 
-    &.currentButton {
-        // background: hsl(0, 0%, 80%);
-        // background: white;
-        // color: black;
-        border-bottom: 2px solid hsl(0, 0%, 75%);
+    .typeContainer {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .SearchList {
+        overflow: auto;
     }
     
-    // &:active {
-    //     background: rebeccapurple;
-    // }
+    .safe-search {
+        white-space: nowrap;
+        background-color: rebeccapurple;
+    }
+    
+    .searchType {
+        outline: none;
+        border: none;
+        background: hsl(0, 0%, 10%);
+        
+        &:hover {
+            background: hsl(0, 0%, 20%);
+        }
+    
+        &.currentButton {
+            border-bottom: 2px solid hsl(0, 0%, 75%);
+        }
+    }
 }
+
+.SearchPanel.empty {
+    // justify-content: center;
+    align-items: center;
+    // background-color: red;
+}
+
 
 // .article {
     

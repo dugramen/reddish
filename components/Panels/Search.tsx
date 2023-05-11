@@ -3,46 +3,53 @@ import searchStyle from '../../styles/Search.module.scss';
 import listingStyle from '../../styles/Listing.module.scss';
 import EntryPost from "../entries/EntryPost";
 import Listing from "../Listing";
+import Image from "next/image";
 
 import { fetchData } from "../utils";
+import { convertToObject } from "typescript";
 
 // interface Props {
 //     setSubreddit, setPrefix, setCurrentPost, listingComponent, setIsListingVisible,
 //     [a: string | symbol | number]: any,
 // }
 
-export default function Search({setSubreddit, setPrefix, setCurrentPost, listingComponent, setIsListingVisible, name}) {
-    const [inputVal, setInputVal] = React.useState('')
+export default function Search({search, type, setSubreddit, setPrefix, setCurrentPost, listingComponent, setIsListingVisible, name}) {
+    // const [inputVal, setInputVal] = React.useState('')
     const [searchResults, setSearchResults] = React.useState<any>()
     const [list, setList] = React.useState<any>({})
-    const [page, setPage] = React.useState<any>(null)
-    const [type, setType] = React.useState<any>(null)
+    const [page, setPage] = React.useState<any>('')
+    // const [type, setType] = React.useState<any>(null)
     const [current, setCurrent] = React.useState<any>(null)
     const [safeSearch, setSafeSearch] = React.useState(true)
 
     const st = {...listingStyle, ...searchStyle}
 
     const handleSetSubreddit = (value) => setSubreddit(
-        type==='sr'
+        type==='r/'
         ? value?.data?.display_name
-        : type === 'user'
+        : type === 'u/'
             ? value?.data?.name
             : value?.data?.title
     )
 
-    const urlFormatter = (page) => {
-        const pageQuery = (page && `&${page}`) ?? ''
-        const typeQuery = type === null ? '' : `&type=${type}`
+    const urlFormatter = (p) => {
+        const pageQuery = p
+        // const typeQuery = type === '' ? '' : `&type=${type}`
+        const typeQuery = `&type=${{'r/': 'sr', 'u/': 'user'}[type] ?? ''}`
         const safeQuery = safeSearch === false ? '&include_over_18=1' : ''
-        return `https://www.reddit.com/search/.json?q=${inputVal}${pageQuery}${typeQuery}${safeQuery}&raw_json=1`
+        const url = `https://www.reddit.com/search/.json?q=${search}${pageQuery}${typeQuery}${safeQuery}&raw_json=1`
+        // console.log(url)
+        return url
     }
 
-    function handleFetch(page, list) {
-        const url = urlFormatter(page)
+    function handleFetch(p) {
+        const url = urlFormatter(p)
+        console.log(url)
         fetchData(url, (data: any) => {
             setSearchResults(data)
-            // setList({...list, ...(data?.data?.children.reduce((accum, val) => {}, {}))})
-            setList(data?.data?.children?.reduce((accum, val) => ({...accum, [val?.data?.permalink ?? val?.data?.id]: val}), list) ?? {})
+            setList(old => data?.data?.children ?? old)
+            console.log(data)
+            // setList(data?.data?.children?.reduce((accum, val) => ({...accum, [val?.data?.permalink ?? val?.data?.id]: val}), list) ?? {})
         })
     }
 
@@ -50,72 +57,36 @@ export default function Search({setSubreddit, setPrefix, setCurrentPost, listing
         setIsListingVisible(type !== null)
     }, [type])
 
-    React.useEffect(() => {
-        type===null && Object.keys(list).length > 0 && current && (() => {
-            // setCurrentPost(list?.[current]?.data)
-        })()
-    }, [type, current])
-
     // These are for refreshing listings
     React.useEffect(() => {
-        handleFetch(page, list)
+        handleFetch(page)
     }, [page])
+
     React.useEffect(() => {
-        setList([])
-        setPage(null)
-        handleFetch(null, [])
-    }, [inputVal, type, safeSearch])
+        // setList([])
+        setPage('')
+        handleFetch(null)
+        console.log(type)
+    }, [search, type, safeSearch])
+
+    const searchOptionMap = [
+        ['Sub', 'sr'],
+        ['User', 'user'],
+        ['Post', null]
+    ]
 
     return (
-    <div className={st.SearchPanel + ' PanelSection'} id='Search'>
-        <input 
-            value={inputVal} 
-            onChange={(e) => setInputVal(e.target.value)} 
-            placeholder="Search"
-            // onSubmit={} 
-        />
-
-        <div>
-            <button
-                onClick={e => setType('sr')}
-                className={`${st.searchType} ${type === 'sr' && st.currentButton}`}
-                >
-                Subreddit
-            </button>
-
-            <button
-                onClick={e => setType('user')}
-                className={`${st.searchType} ${type === 'user' && st.currentButton}`}
-                >
-                User
-            </button>
-
-            <button
-                onClick={e => setType(null)}
-                className={`${st.searchType} ${type === null && st.currentButton}`}
-            >
-                Post
-            </button>
-
-            <label className="safe-search">
-                <input
-                    type={'checkbox'}
-                    checked={safeSearch}
-                    onChange={e => setSafeSearch(e.target.checked)}
-                    style={{whiteSpace: 'nowrap'}}
-                />
-                Safe Search
-            </label>
-        </div>
-
+    <div className={st.SearchPanel + ' PanelSection ' + (search === '' ? st.empty : '')} id='Search'>
         {
             <Listing 
                 // dataLength={undefined} 
-                next={() => setPage(`after=${searchResults?.data?.after}`)} 
+                next={() => setPage(`&after=${searchResults?.data?.after}`)} 
                 sourceUrl={urlFormatter('')}    
                 id='SearchPanelListing'        
             >
                 {Object.entries(list).map(([key, value]: any) => {
+                    const data = value.data ?? {}
+                    // console.log(data)
                     if (type===null) {
                         return <EntryPost 
                             key={key}
@@ -124,43 +95,53 @@ export default function Search({setSubreddit, setPrefix, setCurrentPost, listing
                             setCurrentPost={(val) => {
                                 setCurrentPost(val?.data ?? '')
                                 // handleSetSubreddit(val)
-                                console.log(val)
+                                // console.log(val)
                             }} 
                             postType={'r/'}                       
                         />
                     }
+                    const imgSrc = (
+                        value?.data?.community_icon ||
+                        value?.data?.header_img ||
+                        value?.data?.icon_img ||
+                        data.thumbnail ||
+                        ''
+                    )
 
                     return <div 
                         key={key}
-                        className={`${st.article} ${key === current && st.current}`}
+                        className={`${st.article} ${key === current && st.current} panel-listing-container`}
                         onClick={() => {
                             setCurrent(key)
-                            
-                            setPrefix(type==='sr'? 'r/' : 'u/')
+                            setPrefix(type)
                             handleSetSubreddit(value)
                         }}
                     >
-                        <img
-                            src={
-                                type === 'sr'
-                                ? value?.data?.community_icon === ''
-                                    ? value?.data?.header_img
-                                    : value?.data?.community_icon
-                                : type === 'user'
-                                    ? value?.data?.icon_img
-                                    : ''
-                            }
+                        <Image
+                            loader={() => imgSrc}
+                            unoptimized={true}
+                            src={imgSrc}
                             alt={' '}
                             width={24}
                             height={24}
                         />
-                        {
-                        type==='sr'
-                        ? value?.data?.display_name
-                        : type === 'user'
-                            ? value?.data?.name
-                            : value?.data?.title
-                        }
+
+                        <div className="hover-label">
+                            {
+                                value?.data?.display_name ||
+                                value?.data?.title ||
+                                value?.data?.name || 
+                                'wofnionivmriv'
+                            }
+                        </div>
+
+                        {/* {
+                            type==='sr'
+                            ? value?.data?.display_name
+                            : type === 'user'
+                                ? value?.data?.name
+                                : value?.data?.title
+                        } */}
                     </div>
                 })}
             </Listing>

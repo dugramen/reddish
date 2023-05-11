@@ -1,0 +1,20 @@
+.CommentsPanel {
+    display: flex;
+    flex-direction: column;
+    // position: absolute;
+    // right: 0;
+    // top: 0;
+    // bottom: 0;
+
+    // transform: translateX(calc(100% - 16px));
+    // z-index: 15;
+    transition: .3s;
+    // height: 100%;
+    overflow: auto;
+
+    background: black;
+
+    &:hover {
+        transform: translateX(0);
+    }
+}

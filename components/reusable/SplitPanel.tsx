@@ -108,7 +108,6 @@ export default function SplitPanel(props: Props) {
                     className="reflex-splitter-override"   
                     propagate={true} 
                     key={index*2 + 1}
-                    
                 />
             ], [])}
         </ReflexContainer>

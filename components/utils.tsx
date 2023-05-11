@@ -1,4 +1,4 @@
-
+import Image from "next/image"
 
 export function fetchData(url: string, setter: (a: any) => any) {
     // fetch("http://localhost:5000/" + url)
@@ -15,3 +15,13 @@ export function fetchData(url: string, setter: (a: any) => any) {
       })
       .catch(error => {})
   }
+
+export function ImageLoaded(props) {
+    return <Image 
+        src={props.src ?? ''}
+        alt=''
+        loader={() => props.src}
+        unoptimized={true}
+        {...props}
+    />
+}

@@ -1,13 +1,13 @@
 import Cors from 'cors';
+import type { NextApiRequest, NextApiResponse } from 'next';
 
 function initMiddleware(middleware) {
-    return (req, res) =>
-        new Promise((resolve, reject) => {
+    return (req, res) => new Promise((resolve, reject) => {
         middleware(req, res, (result) => {
             if (result instanceof Error) {
                 return reject(result)
             }
-                return resolve(result)
+            return resolve(result)
         })
     })
 }
@@ -21,14 +21,24 @@ const cors = initMiddleware(
   })
 );
 
-export default async function handler(req, res) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   // Run cors
-  await cors(req, res);
-  const url = req.url.replace('/api/cors/', '');
-  const response = await fetch(url)
-  const data = await response.json()
 
-  // Rest of the API logic
-  // res.json( { message: 'Hello NextJs Cors!' , poo: data} );
-  res.json( data );
+  await cors(req, res);
+
+  let url = req.url?.replace('/api/cors/', '') ?? '';
+  url = 'https://' + url
+  // console.log(url)
+
+  try {
+    const response = await fetch(url)
+    const data = await response.json()
+    res.json( data );
+  } catch {
+    res.json('Failed request ' + url)
+  }
+  // res.json('Failed request')
 }
