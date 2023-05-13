@@ -21,22 +21,21 @@ export default function PostsPanel({subreddit, searchType, searchSafe}) {
     const [currentPost, setCurrentPost] = useState<any>({})
     const [page, setPage] = useState('')
     const [listing, setListing] = useState<any>({})
-    let items: any[] = Object.values(listing).map((item: any, index) => ({...item, index: index}))
-    
+
+    const listingToItems = data => Object.values(data).map((item: any, index) => ({...item, index: index}))
+    let items: any[] = listingToItems(listing)
+
     const [fitHeight, setFitHeight] = useState(true)
     const [controlsShown, setControlsShown] = useState(false)
     
-    // const [minimapOpen, setMinimapOpen] = useState(false)
-    // const [hoverSide, setHoverSide] = useState<'left' | 'right'>('left')
-    // const [gridView, setGridView] = useState(false)
-    // const [manualScrolling, setManualScrolling] = useState(false)
-    // const [currentScrollSide, setCurrentScrollSide] = useState('left')
+    
 
     // items = items.filter(item => item.media_metadata)
 
     const commentsRef = useRef<any>(null)
     const postRef = useRef<any>(null)
     const holdMap = useRef({})
+    const thumbnailContainerRef = useRef<HTMLDivElement>(null)
 
     const previousPost = () => setCurrentPost(old => {
         console.log('preved ', items)
@@ -44,6 +43,7 @@ export default function PostsPanel({subreddit, searchType, searchSafe}) {
     })
     const nextPost = () => setCurrentPost(old => {
         console.log('nexted ', items)
+        // thumbnailContainerRef.current?.scrollBy({left: 75, behavior: 'smooth'})
         return items[Math.min(old.index + 1, items.length - 1)]
     })
     const toggleFit = () => setFitHeight(old => !old)
@@ -124,17 +124,24 @@ export default function PostsPanel({subreddit, searchType, searchSafe}) {
 
     function handleFetch() {
         const url = `api.reddit.com/${searchType}${subreddit}.json?raw_json=1&count=25${page ?? ""}`
-        fetchData(url, d => {
-            console.log(d)
-            // setListing(data)
-            setListing(old => ({
-                ...(page.startsWith('&after') ? old : {}),
-                ...(d?.data?.children ?? []).reduce((acc, val) => ({
-                    ...acc,
-                    [val.data.name]: val.data
-                }), {}),
-            }))
+        return new Promise((res) => {
+            fetchData(url, d => {
+                console.log(d)
+                // setListing(data)
+                setListing(old => {
+                    const result =  {
+                        ...(page.startsWith('&after') ? old : {}),
+                        ...(d?.data?.children ?? []).reduce((acc, val) => ({
+                            ...acc,
+                            [val.data.name]: val.data
+                        }), {}),
+                    }
+                    res(result)
+                    return result
+                })
+            })
         })
+        
     }
 
     function loadMore() {
@@ -150,15 +157,25 @@ export default function PostsPanel({subreddit, searchType, searchSafe}) {
         }
     }
 
+    // useEffect(() => {
+    //     setPage('')
+    //     setListing([])
+    //     setCurrentPost(items[0])
+    // }, [subreddit, searchType, searchSafe])
+
     useEffect(() => {
         setPage('')
         setListing([])
-        setCurrentPost(items[0])
+        handleFetch().then(data => {
+            const nt = listingToItems(data)
+            console.log('nt', nt, data)
+            setCurrentPost(nt[0])
+        })
     }, [subreddit, searchType, searchSafe])
 
     useEffect(() => {
         handleFetch()
-    }, [subreddit, searchType, searchSafe, page])
+    }, [page])
 
     return (
         <div className={st`PostsPanel`}>
@@ -212,8 +229,10 @@ export default function PostsPanel({subreddit, searchType, searchSafe}) {
                 <div 
                     className={st`thumbnails-container`}
                     onScroll={handleScrollH}
+                    ref={thumbnailContainerRef}
                 >
                     {items.map(item => (
+                        // eslint-disable-next-line @next/next/no-img-element
                         <img
                             className={item.id === currentPost.id ? st`current` : ''}
                             src={item.thumbnail}
@@ -222,6 +241,24 @@ export default function PostsPanel({subreddit, searchType, searchSafe}) {
                             // width={50}
                             // height={50}
                             onClick={() => setCurrentPost(item)}
+                            ref={el => {
+                                if (item.id === currentPost.id) {
+                                    const thumb = thumbnailContainerRef.current
+                                    if (!thumb || !el) {return}
+                                    const destination = Math.max(
+                                        Math.min(thumb.scrollLeft, el.offsetLeft),
+                                        el.offsetLeft - thumb.clientWidth + el.clientWidth + 8
+                                    )
+                                    console.log([
+                                        el.offsetLeft - thumb.clientWidth,
+                                        el.offsetLeft,
+                                        thumb.scrollLeft
+                                    ])
+                                    thumb.scrollTo({
+                                        left: destination
+                                    })
+                                }
+                            }}
                         />
                     ))}
                 </div>
