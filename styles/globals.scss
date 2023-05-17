@@ -113,31 +113,31 @@ a {
   }
 }
 
-input {
-  background: none;
-  color: white;
-  border: none;
-  border-bottom: 2px solid hsla(0, 0%, 100%, 0);
-  border-radius: 8px 8px 2px 2px;
+// input {
+//   background: none;
+//   color: white;
+//   border: none;
+//   border-bottom: 2px solid hsla(0, 0%, 100%, 0);
+//   border-radius: 8px 8px 2px 2px;
 
-  outline: none;
-  padding: 8px 12px;
-  padding-top: 10px;
-  margin: 8px;
-  margin-top: 16;
-  transition: .3s;
-  opacity: .75;
+//   outline: none;
+//   padding: 8px 12px;
+//   padding-top: 10px;
+//   margin: 8px;
+//   margin-top: 16;
+//   transition: .3s;
+//   opacity: .75;
 
-  &:hover {
-    // border: none;
-    // border-bottom-color: hsla(0, 0%, 100%, 1);
-    background: hsl(0, 0%, 20%);
-    opacity: 1;
-  }
-  &:focus {
-    border-bottom-color: white;
-  }
-}
+//   &:hover {
+//     // border: none;
+//     // border-bottom-color: hsla(0, 0%, 100%, 1);
+//     background: hsl(0, 0%, 20%);
+//     opacity: 1;
+//   }
+//   &:focus {
+//     border-bottom-color: white;
+//   }
+// }
 
 a {
   text-decoration: underline;

@@ -1,17 +1,22 @@
 import { useState, useEffect, useRef } from 'react';
-import styles from '../../styles/HomePanel.module.scss';
+import styles from '../../styles/SearchPanel.module.scss'; 
 import { ImageLoaded, fetchData } from '../utils';
 import Image from 'next/image';
 
-export default function SearchPanel( {opened, setOpened, searchInput, searchType, searchSafe, setSubreddit} ) {
+export default function SearchPanel({
+    opened, setOpened,
+    searchType, setSearchType,
+    searchSafe, setSearchSafe,
+    subreddit, setSubreddit,
+}) {
 
     // const [opened, setOpened] = useState(false)
     const [page, setPage] = useState('')
     const [listing, setListing] = useState<any>({})
+    const [searchInput, setSearchInput] = useState('')
     const items: any[] = Object.values(listing)
 
     const scrollRef = useRef<HTMLDivElement>(null)
-    const titlesRef = useRef<HTMLDivElement>(null)
 
     function handleFetch() {
         const pageQuery = page
@@ -50,10 +55,25 @@ export default function SearchPanel( {opened, setOpened, searchInput, searchType
     }, [searchInput, searchType, searchSafe, page])
 
     return (
-        <div className={styles.HomePanel + ' SearchPanel'}>
+        <div className={styles.SearchPanel + ' SearchPanel'}>
+            
+            <div className={styles.InputsContainer}>
+                <select onChange={event => setSearchType(event.target.value)}>
+                    <option value='r/'>{'subreddit'}</option>
+                    <option value='u/'>{'user'}</option>
+                    <option value='post'>{'post'}</option>
+                </select>
+                <input
+                    type='search'
+                    placeholder='Search'
+                    onChange={event => setSearchInput(event.target.value)}
+                />
+            </div>
+
             <div 
-                className={`${styles.IconsContainer}  ${(opened ? styles.Opened : styles.Closed)}`} 
-                onScroll={handleScroll} ref={scrollRef}
+                className={`${styles.ItemsContainer}  ${(opened ? styles.Opened : styles.Closed)}`} 
+                onScroll={handleScroll} 
+                ref={scrollRef}
                 onMouseEnter={() => setOpened(true)}
                 // onMouseLeave={() => setOpened(false)}
             >

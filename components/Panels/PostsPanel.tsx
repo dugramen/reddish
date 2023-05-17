@@ -6,7 +6,7 @@ import ReactPlayer from 'react-player';
 import CommentsPanel from './CommentsPanel';
 import anime from 'animejs/lib/anime.es.js';
 import ImageGallery from 'react-image-gallery';
-import { faL } from '@fortawesome/free-solid-svg-icons';
+import SearchPanel from './SearchPanel';
 
 function st(strings, ...values) {
     const wholeString = strings.reduce((result, str, i) => {
@@ -17,10 +17,22 @@ function st(strings, ...values) {
     return styles[wholeString] + ' '
 }
 
-export default function PostsPanel({subreddit, searchType, searchSafe}) {
+export default function PostsPanel(props) {
     const [currentPost, setCurrentPost] = useState<any>({})
     const [page, setPage] = useState('')
     const [listing, setListing] = useState<any>({})
+    const [searchOpen, setSearchOpen] = useState(false)
+    
+    const [searchType, setSearchType] = useState('r/')
+    const [searchSafe, setSearchSafe] = useState(true)
+    const [subreddit, setSubreddit] = useState('')
+
+
+    // searchInput={undefined} 
+    // searchType={undefined} 
+    // searchSafe={undefined} 
+    // setSubreddit={undefined} 
+
 
     const listingToItems = data => Object.values(data).map((item: any, index) => ({...item, index: index}))
     let items: any[] = listingToItems(listing)
@@ -179,35 +191,85 @@ export default function PostsPanel({subreddit, searchType, searchSafe}) {
 
     return (
         <div className={st`PostsPanel`}>
-            {['left', 'right', 'top', 'bottom'].map(side => (
+            {['left', 'right', 'bottom', 'top'].map(side => (
                 <div
                     key={side}
-                    style={{
-                        // background: 'red',
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        bottom: 0,
-                        right: 0,
-                        minWidth: 32,
-                        minHeight: 32,
-                        zIndex: 2,
-                        writingMode: 'vertical-rl',
-                        // textOrientation: 'upright',
-                        textAlign: 'center',
-                        verticalAlign: 'center',
-                        opacity: controlsShown ? 1 : 0,
-                        transition: '.3s',
-                        [side]: 'unset',
-                    }}
+                    className={
+                        st`edges` + 
+                        st`${side}` +
+                        (controlsShown ? st`shown` : '')
+                    }
                     onMouseEnter={event => {
                         console.log('entered ' + side + ' side')
                         setControlsShown(true)
                     }}
                 >
-                    {side === 'left' && 'Comments'}
+                    {side === 'right' && (
+                        <div 
+                            className={st`clickable-edge`}
+                            onClick={() => {
+                                setSearchOpen(false)
+                            }}
+                        > Comments </div>
+                    )}
+                    {/* {side === 'left' && (
+                        <div 
+                            className={st`clickable-edge`}
+                            onClick={() => {
+                                setSearchOpen(true)
+                            }}
+                        > Search </div>
+                    )} */}
                 </div>
             ))}
+
+            <div style={{
+                background: 'purple',
+                height: '100%',
+                width: '400px',
+                position: 'absolute',
+                left: 0,
+                zIndex: 10,
+                transform: searchOpen ? 'none' : 'translateX(-100%)',
+                transition: '.3s',
+            }}>
+                <div
+                    className={
+                        st`edges` + 
+                        st`left` +
+                        (controlsShown ? st`shown` : '') +
+                        (searchOpen ? st`open` : '')
+                    }
+                    onMouseEnter={event => {
+                        !searchOpen && setControlsShown(true)
+                    }}
+                >
+                    <div 
+                        className={st`clickable-edge`}
+                        onClick={() => {
+                            setSearchOpen(true)
+                            setControlsShown(false)
+                        }}
+                    > Search </div>
+                </div>
+                <div
+                    style={{
+                        height: '100%',
+                        width: '100%',
+                        background: 'hsl(0, 0%, 10%)',
+                    }}
+                >
+                    <SearchPanel 
+                        opened={searchOpen} 
+                        setOpened={setSearchOpen} 
+                        {...{
+                            searchType, setSearchType,
+                            searchSafe, setSearchSafe,
+                            subreddit, setSubreddit
+                        }}            
+                    />
+                </div>
+            </div>
             
 
             <Post
@@ -324,14 +386,6 @@ function Post({item, className='', extra={}, refFunc = (el) => {}, handlePostCli
                             onLoadedData={event => event.currentTarget.focus()}
                             // autoPlay
                         />
-
-                        {/* <ReactPlayer
-                            url={item.secure_media?.reddit_video?.fallback_url} 
-                            controls={true} 
-                            // className={styles.videoPlayer} 
-                            // muted={true} 
-                            // playing={false} 
-                        /> */}
                     </div>
                 }
 

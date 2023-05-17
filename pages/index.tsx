@@ -95,7 +95,7 @@ export default function Home() {
 
     return (
         <div className={styles.page}>
-            <div 
+            {/* <div 
                 className="Header" 
                 onMouseEnter={() => setSearchOpened(true)}
                 onMouseLeave={() => setSearchOpened(false)}
@@ -126,21 +126,11 @@ export default function Home() {
                     />
                 </div>
 
-
-                <SearchPanel 
-                    opened={searchOpened}
-                    setOpened={setSearchOpened}
-                    searchInput={search} 
-                    searchType={searchType} 
-                    searchSafe={false} 
-                    setSubreddit={setSubreddit}                
-                />
-
-            </div>
+            </div> */}
 
             <PostsPanel 
                 subreddit={subreddit} 
-                searchType={searchType} 
+                // searchType={searchType} 
                 searchSafe={false}                
             />
 
