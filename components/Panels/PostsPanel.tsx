@@ -42,6 +42,20 @@ export default function PostsPanel(props) {
     const postRef = useRef<any>(null)
     const holdMap = useRef({})
     const thumbnailContainerRef = useRef<HTMLDivElement>(null)
+    const [currentThumbnail, setCurrentThumbnail] = useState<HTMLDivElement | null>(null)
+
+    useEffect(() => {
+        const thumb = thumbnailContainerRef.current
+        const el = currentThumbnail
+        if (!thumb || !el) {return}
+        const destination = Math.max(
+            Math.min(thumb.scrollLeft, el.offsetLeft),
+            el.offsetLeft - thumb.clientWidth + el.clientWidth + 8
+        )
+        thumb.scrollTo({
+            left: destination
+        })
+    }, [currentThumbnail])
 
     const previousPost = () => setCurrentPost(old => {
         console.log('preved ', items)
@@ -133,18 +147,14 @@ export default function PostsPanel(props) {
         }
     }, [commentsOpen, searchOpen])
 
-    // useKeyPress('ArrowLeft', a => a === 'down' && previousPost())
-    // useKeyPress('ArrowRight', a => a === 'down' && nextPost())
-
-    function handleFetch() {
-        const url = `api.reddit.com/${searchType}${subreddit}.json?raw_json=1&count=25${page ?? ""}`
+    function handleFetch(_page = page) {
+        const url = `api.reddit.com/${searchType}${subreddit}.json?raw_json=1&count=25${_page ?? ""}`
         return new Promise((res) => {
             fetchData(url, d => {
                 console.log(d)
-                // setListing(data)
                 setListing(old => {
                     const result =  {
-                        ...(page.startsWith('&after') ? old : {}),
+                        ...(_page.startsWith('&after') ? old : {}),
                         ...(d?.data?.children ?? []).reduce((acc, val) => ({
                             ...acc,
                             [val.data.name]: val.data
@@ -155,11 +165,9 @@ export default function PostsPanel(props) {
                 })
             })
         })
-        
     }
 
     function loadMore() {
-        console.log('more loading')
         setPage(`&after=${items.at(-1)?.name ?? ''}`)
         handleFetch()
     }
@@ -171,27 +179,18 @@ export default function PostsPanel(props) {
         }
     }
 
-    // useEffect(() => {
-    //     setPage('')
-    //     setListing([])
-    //     setCurrentPost(items[0])
-    // }, [subreddit, searchType, searchSafe])
-
     useEffect(() => {
         setPage('')
         setListing([])
+        handleFetch('').then(data => {
+            const nt = listingToItems(data)
+            console.log('nt', nt, data)
+            setCurrentPost(nt[0])
+        })
     }, [subreddit, searchType, searchSafe])
     
     useEffect(() => {
-        if (page === '') {
-            handleFetch().then(data => {
-                const nt = listingToItems(data)
-                console.log('nt', nt, data)
-                setCurrentPost(nt[0])
-            })
-        } else {
-            handleFetch()
-        }
+        handleFetch()
     }, [page])
 
     return (
@@ -256,7 +255,15 @@ export default function PostsPanel(props) {
                 }}
             />
 
-            {currentPost && <div 
+            <GalleryControls 
+                {...{
+                    controlsShown, setControlsShown, handleScrollH, 
+                    thumbnailContainerRef, items, currentPost, setCurrentPost, 
+                    nextPost, previousPost, fitHeight, setFitHeight, setCurrentThumbnail
+                }}         
+            />
+
+            {/* {currentPost && <div 
                 className={st`gallery-controls` + (controlsShown ? st`shown` : '')}
                 onMouseEnter={() => setControlsShown(true)}
             >
@@ -303,10 +310,75 @@ export default function PostsPanel(props) {
                         onClick={() => setFitHeight(old => !old)}
                     >{fitHeight ? 'Clamp width' : 'Clamp Height'}</button>
                 </div>
-            </div>}
+            </div>} */}
         </div>
     )
 }
+
+function GalleryControls({
+    controlsShown, setControlsShown,
+    handleScrollH, thumbnailContainerRef,
+    items, currentPost, setCurrentPost,
+    nextPost, previousPost, fitHeight, setFitHeight, setCurrentThumbnail
+}) {
+    return (
+        <div 
+            className={st`gallery-controls` + (controlsShown ? st`shown` : '')}
+            onMouseEnter={() => setControlsShown(true)}
+        >
+            <div 
+                className={st`thumbnails-container`}
+                onScroll={handleScrollH}
+                ref={thumbnailContainerRef}
+            >
+                {items.map(item => (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                        className={item.id === currentPost.id ? st`current` : ''}
+                        src={item.thumbnail}
+                        alt=''
+                        key={item.id}
+                        onClick={() => setCurrentPost(item)}
+                        ref={el => {
+                            if (item.id === currentPost.id) {
+                                setCurrentThumbnail?.(el)
+                            }
+                        }}
+                        // ref={el => {
+                            
+                        //     if (item.id === currentPost.id) {
+                        //         const thumb = thumbnailContainerRef.current
+                        //         if (!thumb || !el) {return}
+                        //         const destination = Math.max(
+                        //             Math.min(thumb.scrollLeft, el.offsetLeft),
+                        //             el.offsetLeft - thumb.clientWidth + el.clientWidth + 8
+                        //         )
+                        //         thumb.scrollTo({
+                        //             left: destination
+                        //         })
+                        //     }
+                        // }}
+                    />
+                ))}
+            </div>
+            
+            <div className={st`controls-container`}>
+                <button
+                    onClick={previousPost}
+                    >Prev</button>
+                <button>Play</button>
+                <button
+                    onClick={nextPost}
+                >Next</button>
+
+                <button
+                    onClick={() => setFitHeight(old => !old)}
+                >{fitHeight ? 'Clamp width' : 'Clamp Height'}</button>
+            </div>
+        </div>
+    )
+}
+
 
 function FloatingPanel({
     panelOpen, setPanelOpen,
