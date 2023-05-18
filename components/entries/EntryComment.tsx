@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import React from "react";
 import s_list from '../../styles/Listing.module.scss'
 import s_entr from '../../styles/Entry.module.scss'
@@ -24,6 +25,11 @@ export default function EntryComment(props) {
     >
         <div className={styles.postLabelContainer}>
             <div className={styles.subtext}>
+                <img
+                    src={comment}
+                    alt=""
+                />
+
                 u/{comment?.data?.author}
                 
                 <div style={{whiteSpace: 'pre'}}>{' '}</div>

@@ -11,6 +11,7 @@ export default function CommentsPanel({permalink, setRef}) {
         if (permalink) {
             const url = `api.reddit.com${permalink}.json`
             fetchData(url, data => {
+                console.log(data?.[1]?.data)
                 setComments(data?.[1]?.data)
             })
         }

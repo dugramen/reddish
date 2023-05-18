@@ -25,15 +25,8 @@ export default function PostsPanel(props) {
     const [commentsOpen, setCommentsOpen] = useState(false)
     
     const [searchType, setSearchType] = useState('r/')
-    const [searchSafe, setSearchSafe] = useState(true)
+    const [searchSafe, setSearchSafe] = useState(false)
     const [subreddit, setSubreddit] = useState('')
-
-
-    // searchInput={undefined} 
-    // searchType={undefined} 
-    // searchSafe={undefined} 
-    // setSubreddit={undefined} 
-
 
     const listingToItems = data => Object.values(data).map((item: any, index) => ({...item, index: index}))
     let items: any[] = listingToItems(listing)
@@ -110,6 +103,8 @@ export default function PostsPanel(props) {
             's': () => scrollPost(1, key),
             'd': nextPost,
             'e': toggleFit,
+            'q': () => setSearchOpen(old => !old),
+            'c': () => setCommentsOpen(old => !old)
             // 'ArrowUp': null,
             // 'ArrowDown': null,
         };
@@ -131,6 +126,12 @@ export default function PostsPanel(props) {
             removeEventListener('keyup', handleKeyRelease)
         }
     }, [listing])
+
+    useEffect(() => {
+        if (commentsOpen || searchOpen) {
+            setControlsShown(false)
+        }
+    }, [commentsOpen, searchOpen])
 
     // useKeyPress('ArrowLeft', a => a === 'down' && previousPost())
     // useKeyPress('ArrowRight', a => a === 'down' && nextPost())
@@ -179,15 +180,18 @@ export default function PostsPanel(props) {
     useEffect(() => {
         setPage('')
         setListing([])
-        handleFetch().then(data => {
-            const nt = listingToItems(data)
-            console.log('nt', nt, data)
-            setCurrentPost(nt[0])
-        })
     }, [subreddit, searchType, searchSafe])
-
+    
     useEffect(() => {
-        handleFetch()
+        if (page === '') {
+            handleFetch().then(data => {
+                const nt = listingToItems(data)
+                console.log('nt', nt, data)
+                setCurrentPost(nt[0])
+            })
+        } else {
+            handleFetch()
+        }
     }, [page])
 
     return (
@@ -205,22 +209,6 @@ export default function PostsPanel(props) {
                         setControlsShown(true)
                     }}
                 >
-                    {/* {side === 'right' && (
-                        <div 
-                            className={st`clickable-edge`}
-                            onClick={() => {
-                                setSearchOpen(false)
-                            }}
-                        > Comments </div>
-                    )} */}
-                    {/* {side === 'left' && (
-                        <div 
-                            className={st`clickable-edge`}
-                            onClick={() => {
-                                setSearchOpen(true)
-                            }}
-                        > Search </div>
-                    )} */}
                 </div>
             ))}
 
@@ -251,59 +239,10 @@ export default function PostsPanel(props) {
                 label='Comments'
             >
                 <CommentsPanel 
-                    permalink={currentPost.permalink} 
+                    permalink={currentPost?.permalink} 
                     setRef={undefined}                
                 />
             </FloatingPanel>
-
-            {/* <div style={{
-                background: 'purple',
-                height: '100%',
-                width: '400px',
-                position: 'absolute',
-                left: 0,
-                zIndex: 10,
-                transform: searchOpen ? 'none' : 'translateX(-100%)',
-                transition: '.3s',
-            }}>
-                <div
-                    className={
-                        st`edges` + 
-                        st`left` +
-                        (controlsShown ? st`shown` : '') +
-                        (searchOpen ? st`open` : '')
-                    }
-                    onMouseEnter={event => {
-                        !searchOpen && setControlsShown(true)
-                    }}
-                >
-                    <div 
-                        className={st`clickable-edge`}
-                        onClick={() => {
-                            setSearchOpen(true)
-                            setControlsShown(false)
-                        }}
-                    > Search </div>
-                </div>
-                <div
-                    style={{
-                        height: '100%',
-                        width: '100%',
-                        background: 'hsl(0, 0%, 10%)',
-                    }}
-                >
-                    <SearchPanel 
-                        opened={searchOpen} 
-                        setOpened={setSearchOpen} 
-                        {...{
-                            searchType, setSearchType,
-                            searchSafe, setSearchSafe,
-                            subreddit, setSubreddit
-                        }}            
-                    />
-                </div>
-            </div> */}
-            
 
             <Post
                 item={currentPost}
@@ -333,8 +272,6 @@ export default function PostsPanel(props) {
                             src={item.thumbnail}
                             alt=''
                             key={item.id}
-                            // width={50}
-                            // height={50}
                             onClick={() => setCurrentPost(item)}
                             ref={el => {
                                 if (item.id === currentPost.id) {
@@ -344,11 +281,6 @@ export default function PostsPanel(props) {
                                         Math.min(thumb.scrollLeft, el.offsetLeft),
                                         el.offsetLeft - thumb.clientWidth + el.clientWidth + 8
                                     )
-                                    console.log([
-                                        el.offsetLeft - thumb.clientWidth,
-                                        el.offsetLeft,
-                                        thumb.scrollLeft
-                                    ])
                                     thumb.scrollTo({
                                         left: destination
                                     })
@@ -411,7 +343,7 @@ function FloatingPanel({
                     className={st`clickable-edge`}
                     onClick={() => {
                         setPanelOpen(true)
-                        setControlsShown(false)
+                        // setControlsShown(false)
                     }}
                 > {label} </div>
             </div>
@@ -532,17 +464,3 @@ function Post({item, className='', extra={}, refFunc = (el) => {}, handlePostCli
         </div>
     )
 }
-
-// function PostsContainer({items, postsRef, handleScroll, handlePostClick}) {
-//     return (
-//         <div className={st`PostsContainer`} onScroll={handleScroll}>
-//             {items.map((item, i) => ( 
-//                 <Post
-//                     item={item}
-//                     key={item.id}
-//                     refFunc={el => postsRef.current[i] = el}
-//                 />
-//             ))}
-//         </div>
-//     )
-// }

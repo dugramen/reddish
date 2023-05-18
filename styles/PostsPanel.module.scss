@@ -117,11 +117,12 @@
 }
 
 $edge-width: 48px;
+$edge-top: 64px;
 
 
 .post-header {
     width: 100%;
-    height: $edge-width;
+    height: $edge-top;
     // padding: 0px 24px;
     // padding-bottom: 32px;
     padding-left: $edge-width;
@@ -176,6 +177,7 @@ $edge-width: 48px;
     &.left, &.right {
         width: $edge-width;
         background: transparent;
+        z-index: -1;
     }
     &.left {
         // position: relative;
@@ -262,7 +264,7 @@ $edge-width: 48px;
 
 .floating-panel {
     height: 100%;
-    width: 400px;
+    width: 50vw;
     position: absolute;
     z-index: 10;
     transition: .3s;
@@ -271,6 +273,7 @@ $edge-width: 48px;
         position: fixed;
         inset: 0;
         background: hsl(0, 0%, 0%, .1);
+        z-index: -1;
     }
     
     &.left {
@@ -297,6 +300,7 @@ $edge-width: 48px;
 
 .Post {
     padding: $edge-width;
+    padding-top: $edge-top;
     padding-bottom: 8px;
 
     &.shown {
