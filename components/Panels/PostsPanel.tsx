@@ -392,6 +392,10 @@ function FloatingPanel({
             }
             style={{...extraStyle,}}
         >
+            <div 
+                className={st`bg-modal`}
+                onClick={() => setPanelOpen(false)}
+            />
             <div
                 className={
                     st`edges` + 
@@ -529,16 +533,16 @@ function Post({item, className='', extra={}, refFunc = (el) => {}, handlePostCli
     )
 }
 
-function PostsContainer({items, postsRef, handleScroll, handlePostClick}) {
-    return (
-        <div className={st`PostsContainer`} onScroll={handleScroll}>
-            {items.map((item, i) => ( 
-                <Post
-                    item={item}
-                    key={item.id}
-                    refFunc={el => postsRef.current[i] = el}
-                />
-            ))}
-        </div>
-    )
-}
+// function PostsContainer({items, postsRef, handleScroll, handlePostClick}) {
+//     return (
+//         <div className={st`PostsContainer`} onScroll={handleScroll}>
+//             {items.map((item, i) => ( 
+//                 <Post
+//                     item={item}
+//                     key={item.id}
+//                     refFunc={el => postsRef.current[i] = el}
+//                 />
+//             ))}
+//         </div>
+//     )
+// }
