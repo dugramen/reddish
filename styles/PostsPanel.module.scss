@@ -178,7 +178,10 @@ $edge-width: 48px;
     &.right {
         // background: linear-gradient(to left, black, transparent);
         border-radius: 20px 0 0 20px;
-        left: unset;
+        // left: unset;
+        left: 0;
+        right: unset;
+        transform: translateX(-100%);
         .clickable-edge {
             transform: rotate(-180deg);
         }
@@ -244,6 +247,35 @@ $edge-width: 48px;
     }
     &.bottom {
         top: unset;
+    }
+}
+
+.floating-panel {
+    height: 100%;
+    width: 400px;
+    position: absolute;
+    z-index: 10;
+    transition: .3s;
+    
+    &.left {
+        left: 0;
+    }
+    &.right {
+        right: 0;
+    }
+
+    .content-container {
+        height: 100%;
+        width: 100%;
+        background: hsl(0, 0%, 10%);
+    }
+    &.closed {
+        &.left {
+            transform: translateX(-100%);
+        }
+        &.right {
+            transform: translateX(100%);
+        }
     }
 }
 

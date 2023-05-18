@@ -17,7 +17,7 @@ export default function CommentsPanel({permalink, setRef}) {
     }, [permalink])
 
     return (
-        <div className={styles.CommentsPanel} ref={el => setRef(el)}>
+        <div className={styles.CommentsPanel} ref={el => setRef?.(el)}>
             {comments?.children?.map((comment, index) => (
                 <EntryComment
                     comment={comment}

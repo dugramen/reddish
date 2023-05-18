@@ -22,6 +22,7 @@ export default function PostsPanel(props) {
     const [page, setPage] = useState('')
     const [listing, setListing] = useState<any>({})
     const [searchOpen, setSearchOpen] = useState(false)
+    const [commentsOpen, setCommentsOpen] = useState(false)
     
     const [searchType, setSearchType] = useState('r/')
     const [searchSafe, setSearchSafe] = useState(true)
@@ -204,14 +205,14 @@ export default function PostsPanel(props) {
                         setControlsShown(true)
                     }}
                 >
-                    {side === 'right' && (
+                    {/* {side === 'right' && (
                         <div 
                             className={st`clickable-edge`}
                             onClick={() => {
                                 setSearchOpen(false)
                             }}
                         > Comments </div>
-                    )}
+                    )} */}
                     {/* {side === 'left' && (
                         <div 
                             className={st`clickable-edge`}
@@ -223,7 +224,39 @@ export default function PostsPanel(props) {
                 </div>
             ))}
 
-            <div style={{
+            <FloatingPanel 
+                panelOpen={searchOpen} 
+                setPanelOpen={setSearchOpen} 
+                controlsShown={controlsShown} 
+                setControlsShown={setControlsShown} 
+                extraStyle={undefined}
+            >
+                <SearchPanel 
+                    opened={searchOpen} 
+                    setOpened={setSearchOpen} 
+                    {...{
+                        searchType, setSearchType,
+                        searchSafe, setSearchSafe,
+                        subreddit, setSubreddit
+                    }}            
+                />
+            </FloatingPanel>
+
+            <FloatingPanel 
+                panelOpen={commentsOpen} 
+                setPanelOpen={setCommentsOpen} 
+                controlsShown={controlsShown} 
+                setControlsShown={setControlsShown} 
+                side='right'
+                label='Comments'
+            >
+                <CommentsPanel 
+                    permalink={currentPost.permalink} 
+                    setRef={undefined}                
+                />
+            </FloatingPanel>
+
+            {/* <div style={{
                 background: 'purple',
                 height: '100%',
                 width: '400px',
@@ -269,7 +302,7 @@ export default function PostsPanel(props) {
                         }}            
                     />
                 </div>
-            </div>
+            </div> */}
             
 
             <Post
@@ -339,6 +372,48 @@ export default function PostsPanel(props) {
                     >{fitHeight ? 'Clamp width' : 'Clamp Height'}</button>
                 </div>
             </div>}
+        </div>
+    )
+}
+
+function FloatingPanel({
+    panelOpen, setPanelOpen,
+    controlsShown, setControlsShown,
+    side = 'left', label = 'Search',
+    extraStyle = {}, className = '', children
+}) {
+    return (
+        <div 
+            className={
+                st`floating-panel` +
+                st`${side}` + 
+                (panelOpen ? st`open` : st`closed`) + 
+                className
+            }
+            style={{...extraStyle,}}
+        >
+            <div
+                className={
+                    st`edges` + 
+                    st`${side}` +
+                    (controlsShown ? st`shown` : '') +
+                    (panelOpen ? st`open` : '')
+                }
+                onMouseEnter={event => {
+                    !panelOpen && setControlsShown(true)
+                }}
+            >
+                <div 
+                    className={st`clickable-edge`}
+                    onClick={() => {
+                        setPanelOpen(true)
+                        setControlsShown(false)
+                    }}
+                > {label} </div>
+            </div>
+            <div className={st`content-container`}>
+                {children}
+            </div>
         </div>
     )
 }
