@@ -10,6 +10,10 @@ export default function EntryComment(props) {
     const stopPropagation = (e) => e.stopPropagation()
 
     const [collapsed, setCollapsed] = React.useState(false)
+    let parsedComment = !collapsed && parse(comment?.data?.body_html ?? '')
+    if (typeof parsedComment === 'string') {
+        parsedComment = parse(parsedComment)
+    }
 
     return (
     <div 
@@ -45,7 +49,13 @@ export default function EntryComment(props) {
                 {` ${collapsed ? comment?.data?.body : ''}`}
             </div>
 
-            {!collapsed && comment?.data?.body}
+            {/* {!collapsed && comment?.data?.body} */}
+            
+            {parsedComment}
+
+            {/* <div>
+                {!collapsed && parse(comment?.data?.body_html ?? '')}
+            </div> */}
             
             <div style={{
                 // paddingLeft: '4px'
