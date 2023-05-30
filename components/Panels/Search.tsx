@@ -6,7 +6,6 @@ import Listing from "../Listing";
 import Image from "next/image";
 
 import { fetchData } from "../utils";
-import { convertToObject } from "typescript";
 
 // interface Props {
 //     setSubreddit, setPrefix, setCurrentPost, listingComponent, setIsListingVisible,

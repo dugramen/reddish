@@ -58,6 +58,16 @@
 
 .controls-container {
     display: flex;
+    width: 100%;
+    padding: 12px;
+    gap: 4px;
+
+    & :first-child {
+        margin-right: auto;
+    }
+    & :last-child {
+        margin-left: auto;
+    }
 }
 
 
@@ -123,8 +133,6 @@ $edge-top: 64px;
 .post-header {
     width: 100%;
     height: $edge-top;
-    // padding: 0px 24px;
-    // padding-bottom: 32px;
     padding-left: $edge-width;
     position: absolute;
     top: 0;
@@ -303,12 +311,6 @@ $edge-top: 64px;
     padding-top: $edge-top;
     padding-bottom: 8px;
 
-    &.shown {
-        // padding-top: 60px;
-        padding-bottom: 120px;
-    }
-
-    // padding-bottom: 150px;
     background-color: hsl(0, 0%, 15%);
     border-radius: 8px;
     width: 100%;
@@ -319,19 +321,23 @@ $edge-top: 64px;
     line-height: initial;
     white-space: initial;
     text-align: initial;
-    
-    // max-height: 100%;
     min-height: 0;
-    // overflow: auto;
 
     position: relative;
-    // &::after {
-    //     content: "";
-    //     display: block;
-    //     min-height: 50px;
-    // }
+
+    
+    & > :last-child {
+        padding-bottom: 150px;
+    }
 
     &.fit-height {
+        & > :last-child {
+            padding-bottom: unset;
+        }
+        &.shown > :last-child {
+            padding-bottom: 150px;
+        }
+
         // padding-bottom: 32px;
         .Content {
             max-height: 100%;

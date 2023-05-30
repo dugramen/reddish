@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import styles from '../../styles/SearchPanel.module.scss'; 
 import { ImageLoaded, fetchData } from '../utils';
 import Image from 'next/image';
+import Login from '../Login';
 
 export default function SearchPanel({
     opened, setOpened,
@@ -22,7 +23,7 @@ export default function SearchPanel({
         const pageQuery = page
         const typeQuery = `&type=${{'r/': 'sr', 'u/': 'user'}[searchType] ?? ''}`
         const safeQuery = searchSafe === false ? '&include_over_18=1' : ''
-        const url = `www.reddit.com/search/.json?q=${searchInput}${pageQuery}${typeQuery}${safeQuery}&raw_json=1`
+        const url = `https://api.reddit.com/search?q=${searchInput}${pageQuery}${typeQuery}${safeQuery}&raw_json=1`
         console.log(url)
         fetchData(url, d => {
             console.log(d)
@@ -56,6 +57,8 @@ export default function SearchPanel({
 
     return (
         <div className={styles.SearchPanel + ' SearchPanel'}>
+
+            <Login></Login>
             
             <div className={styles.InputsContainer}>
                 <select onChange={event => setSearchType(event.target.value)}>

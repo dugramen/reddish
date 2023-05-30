@@ -2,7 +2,7 @@ import {useState, useEffect, useRef, Children, memo} from 'react';
 import styles from '../../styles/PostsPanel.module.scss';
 import { ImageLoaded, fetchData } from '../utils';
 import parse from 'html-react-parser';
-import ReactPlayer from 'react-player';
+// import ReactPlayer from 'react-player';
 import CommentsPanel from './CommentsPanel';
 import anime from 'animejs/lib/anime.es.js';
 import ImageGallery from 'react-image-gallery';
@@ -26,7 +26,7 @@ export default function PostsPanel(props) {
     
     const [searchType, setSearchType] = useState('r/')
     const [searchSafe, setSearchSafe] = useState(false)
-    const [subreddit, setSubreddit] = useState('')
+    const [subreddit, setSubreddit] = useState('pokemon')
 
     const listingToItems = data => Object.values(data).map((item: any, index) => ({...item, index: index}))
     let items: any[] = listingToItems(listing)
@@ -148,7 +148,7 @@ export default function PostsPanel(props) {
     }, [commentsOpen, searchOpen])
 
     function handleFetch(_page = page) {
-        const url = `api.reddit.com/${searchType}${subreddit}.json?raw_json=1&count=25${_page ?? ""}`
+        const url = `https://api.reddit.com/${searchType}${subreddit}?raw_json=1&count=25${_page ?? ""}`
         return new Promise((res) => {
             fetchData(url, d => {
                 console.log(d)
@@ -259,7 +259,8 @@ export default function PostsPanel(props) {
                 {...{
                     controlsShown, setControlsShown, handleScrollH, 
                     thumbnailContainerRef, items, currentPost, setCurrentPost, 
-                    nextPost, previousPost, fitHeight, setFitHeight, setCurrentThumbnail
+                    nextPost, previousPost, fitHeight, setFitHeight, 
+                    setCurrentThumbnail, subreddit, setSearchOpen, setCommentsOpen
                 }}         
             />
 
@@ -319,7 +320,8 @@ function GalleryControls({
     controlsShown, setControlsShown,
     handleScrollH, thumbnailContainerRef,
     items, currentPost, setCurrentPost,
-    nextPost, previousPost, fitHeight, setFitHeight, setCurrentThumbnail
+    nextPost, previousPost, fitHeight, setFitHeight, 
+    setCurrentThumbnail, subreddit, setSearchOpen, setCommentsOpen
 }) {
     return (
         <div 
@@ -344,36 +346,32 @@ function GalleryControls({
                                 setCurrentThumbnail?.(el)
                             }
                         }}
-                        // ref={el => {
-                            
-                        //     if (item.id === currentPost.id) {
-                        //         const thumb = thumbnailContainerRef.current
-                        //         if (!thumb || !el) {return}
-                        //         const destination = Math.max(
-                        //             Math.min(thumb.scrollLeft, el.offsetLeft),
-                        //             el.offsetLeft - thumb.clientWidth + el.clientWidth + 8
-                        //         )
-                        //         thumb.scrollTo({
-                        //             left: destination
-                        //         })
-                        //     }
-                        // }}
                     />
                 ))}
             </div>
             
             <div className={st`controls-container`}>
+                <button onClick={() => setSearchOpen(true)}>
+                    {`r/${subreddit}`}
+                </button>
+
                 <button
                     onClick={previousPost}
-                    >Prev</button>
-                <button>Play</button>
+                >Prev</button>
+
+                {/* <button>Play</button> */}
+                <button
+                    onClick={() => setFitHeight(old => !old)}
+                >{fitHeight ? 'Clamp width' : 'Clamp Height'}</button>
+
                 <button
                     onClick={nextPost}
                 >Next</button>
 
-                <button
-                    onClick={() => setFitHeight(old => !old)}
-                >{fitHeight ? 'Clamp width' : 'Clamp Height'}</button>
+
+                <button onClick={() => setCommentsOpen(true)}>
+                    Comments
+                </button>
             </div>
         </div>
     )
