@@ -128,7 +128,14 @@ export default function PostsPanel(props) {
 
     function handleFetch(_page = page) {
         const searchPref = searchType === 'my-r/' ? 'r/' : searchType
-        const url = `https://api.reddit.com/${searchPref}${subreddit}?raw_json=1&count=25${_page ?? ""}`
+        const url = (
+            searchType === "u/" 
+            ? `https://api.reddit.com/user/${subreddit}/submitted` 
+            : `https://api.reddit.com/${searchPref}${subreddit}`
+        ) + `?raw_json=1&count=25${_page ?? ""}`
+
+        
+        // `https://api.reddit.com/${searchPref}${subreddit}?raw_json=1&count=25${_page ?? ""}`
         return new Promise((res) => {
             fetchData(url, d => {
                 console.log(d)

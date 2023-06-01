@@ -9,7 +9,7 @@ export default function Page(props) {
         if (props.authenticated !== undefined) {
             setTimeout(() => {
                 router.push('/')
-            }, 3000)
+            }, 2000)
         }
     }, [props.authenticated])
 

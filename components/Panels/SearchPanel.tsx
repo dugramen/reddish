@@ -101,6 +101,7 @@ export default function SearchPanel({
                     <option value='post'>{'post'}</option>
                     {authenticated && <>
                         <option value='my-r/'>{'my subreddits'}</option>
+                        
                     </>}
                 </select>
 
