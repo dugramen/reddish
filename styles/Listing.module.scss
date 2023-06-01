@@ -73,12 +73,13 @@
 
   .subtext {
     @include subtext();
-    padding: 20px 0px;
+    padding: 15px 0px;
+    margin: -15px 0px;
   }
 
-  &:nth-child(2) {
-    margin: -50px 0px;
-  }
+  // &:nth-child(2) {
+  //   margin: -50px 0px;
+  // }
 
   .postFooter {
     @include subtext();
