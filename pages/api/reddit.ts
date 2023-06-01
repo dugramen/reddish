@@ -73,8 +73,8 @@ export default async function handler(
         result = await fetchReddit(url, token, req, res)
         console.log('should not run')
     }
-    console.log('76 - ', url, result)
     const data = await result?.json?.()
+    // console.log('76 - ', url, data)
     res.json(data)
     
     

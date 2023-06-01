@@ -38,34 +38,22 @@ export default function PostsPanel(props) {
 
     // items = items.filter(item => item.media_metadata)
 
-    const commentsRef = useRef<any>(null)
+    // const commentsRef = useRef<any>(null)
     const postRef = useRef<any>(null)
     const holdMap = useRef({})
     const thumbnailContainerRef = useRef<HTMLDivElement>(null)
     const [currentThumbnail, setCurrentThumbnail] = useState<HTMLDivElement | null>(null)
 
-    useEffect(() => {
-        const thumb = thumbnailContainerRef.current
-        const el = currentThumbnail
-        if (!thumb || !el) {return}
-        const destination = Math.max(
-            Math.min(thumb.scrollLeft, el.offsetLeft),
-            el.offsetLeft - thumb.clientWidth + el.clientWidth + 8
-        )
-        thumb.scrollTo({
-            left: destination
-        })
-    }, [currentThumbnail])
-
     const previousPost = () => setCurrentPost(old => {
         console.log('preved ', items)
         return items[Math.max(old.index - 1, 0)]
     })
+
     const nextPost = () => setCurrentPost(old => {
         console.log('nexted ', items)
-        // thumbnailContainerRef.current?.scrollBy({left: 75, behavior: 'smooth'})
         return items[Math.min(old.index + 1, items.length - 1)]
     })
+
     const toggleFit = () => setFitHeight(old => !old)
 
     const scrollPost = (dir: 1 | -1, key) => {
@@ -103,6 +91,10 @@ export default function PostsPanel(props) {
         }
     }
 
+    function loadMore() {
+        setPage(`&after=${items.at(-1)?.name ?? ''}`)
+        handleFetch()
+    }
 
     const handleKeyPress = (event) => {
         const {key} = event
@@ -124,6 +116,7 @@ export default function PostsPanel(props) {
         };
         m[key]?.();
     }
+
     const handleKeyRelease = (event) => {
         const {key} = event
         const curr = holdMap.current[key] ?? 0
@@ -132,23 +125,10 @@ export default function PostsPanel(props) {
             [key]: 0
         }
     }
-    useEffect(() => {
-        addEventListener('keydown', handleKeyPress)
-        addEventListener('keyup', handleKeyRelease)
-        return () => {
-            removeEventListener('keydown', handleKeyPress)
-            removeEventListener('keyup', handleKeyRelease)
-        }
-    }, [listing])
-
-    useEffect(() => {
-        if (commentsOpen || searchOpen) {
-            setControlsShown(false)
-        }
-    }, [commentsOpen, searchOpen])
 
     function handleFetch(_page = page) {
-        const url = `https://api.reddit.com/${searchType}${subreddit}?raw_json=1&count=25${_page ?? ""}`
+        const searchPref = searchType === 'my-r/' ? 'r/' : searchType
+        const url = `https://api.reddit.com/${searchPref}${subreddit}?raw_json=1&count=25${_page ?? ""}`
         return new Promise((res) => {
             fetchData(url, d => {
                 console.log(d)
@@ -167,10 +147,6 @@ export default function PostsPanel(props) {
         })
     }
 
-    function loadMore() {
-        setPage(`&after=${items.at(-1)?.name ?? ''}`)
-        handleFetch()
-    }
     function handleScrollH(event) {
         const {scrollLeft, clientWidth, scrollWidth} = event.target
         
@@ -178,6 +154,35 @@ export default function PostsPanel(props) {
             loadMore()
         }
     }
+    
+
+    useEffect(() => {
+        const thumb = thumbnailContainerRef.current
+        const el = currentThumbnail
+        if (!thumb || !el) {return}
+        const destination = Math.max(
+            Math.min(thumb.scrollLeft, el.offsetLeft),
+            el.offsetLeft - thumb.clientWidth + el.clientWidth + 8
+        )
+        thumb.scrollTo({
+            left: destination
+        })
+    }, [currentThumbnail])
+
+    useEffect(() => {
+        addEventListener('keydown', handleKeyPress)
+        addEventListener('keyup', handleKeyRelease)
+        return () => {
+            removeEventListener('keydown', handleKeyPress)
+            removeEventListener('keyup', handleKeyRelease)
+        }
+    }, [listing])
+
+    useEffect(() => {
+        if (commentsOpen || searchOpen) {
+            setControlsShown(false)
+        }
+    }, [commentsOpen, searchOpen])
 
     useEffect(() => {
         setPage('')

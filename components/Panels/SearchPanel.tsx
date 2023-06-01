@@ -1,8 +1,9 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useContext } from 'react';
 import styles from '../../styles/SearchPanel.module.scss'; 
-import { ImageLoaded, fetchData } from '../utils';
+import { ImageLoaded, fetchAuth, fetchData } from '../utils';
 import Image from 'next/image';
 import Login from '../Login';
+import { AuthContext } from '../../pages';
 
 export default function SearchPanel({
     opened, setOpened,
@@ -15,26 +16,42 @@ export default function SearchPanel({
     const [page, setPage] = useState('')
     const [listing, setListing] = useState<any>({})
     const [searchInput, setSearchInput] = useState('')
+    const [localSearch, setLocalSearch] = useState('')
     const items: any[] = Object.values(listing)
 
     const scrollRef = useRef<HTMLDivElement>(null)
+    const myStuff = searchType.startsWith('my-')
+    
+    const authenticated = useContext(AuthContext)
 
     function handleFetch() {
         const pageQuery = page
         const typeQuery = `&type=${{'r/': 'sr', 'u/': 'user'}[searchType] ?? ''}`
         const safeQuery = searchSafe === false ? '&include_over_18=1' : ''
-        const url = `https://api.reddit.com/search?q=${searchInput}${pageQuery}${typeQuery}${safeQuery}&raw_json=1`
+        let url = `https://api.reddit.com/search?q=${searchInput}${pageQuery}${typeQuery}${safeQuery}&raw_json=1`
         console.log(url)
-        fetchData(url, d => {
-            console.log(d)
-            setListing(old => ({
-                ...(page.startsWith('&after') ? old : {}),
-                ...(d?.data?.children ?? []).reduce((acc, val) => ({
-                    ...acc,
-                    [val.data.id]: val.data
-                }), {}),
-            }))
-        })
+        fetchData(url, handleFetchedData)
+        //     , d => {
+        //     console.log(d)
+        //     setListing(old => ({
+        //         ...(page.startsWith('&after') ? old : {}),
+        //         ...(d?.data?.children ?? []).reduce((acc, val) => ({
+        //             ...acc,
+        //             [val.data.id]: val.data
+        //         }), {}),
+        //     }))
+        // })
+    }
+
+    function handleFetchedData(d) {
+        console.log(d)
+        setListing(old => ({
+            ...(page.startsWith('&after') ? old : {}),
+            ...(d?.data?.children ?? []).reduce((acc, val) => ({
+                ...acc,
+                [val.data.id]: val.data
+            }), {}),
+        }))
     }
 
     function handleScroll(event) {
@@ -46,13 +63,30 @@ export default function SearchPanel({
         }
     }
 
+    // useEffect(() => {
+    //     fetchAuth('https://oauth.reddit.com/subreddits/mine/subscriber?limit=100')
+    //     .then(res => {
+    //         console.log('juice -> ', res)
+    //         return res.json()
+    //     })
+    //     .then(data => console.log('subs -> ', data))
+    //     .catch(a => console.log('failur -> ', a))
+    // }, [])
+
     useEffect(() => {
         setPage('')
         setListing([])
     }, [searchInput, searchType, searchSafe])
 
     useEffect(() => {
-        handleFetch()
+        if (myStuff) {
+            fetchAuth('https://oauth.reddit.com/subreddits/mine/subscriber?limit=100')
+            .then(res => res.json())
+            .then(handleFetchedData)
+            .catch(console.log)
+        } else {
+            handleFetch()
+        }
     }, [searchInput, searchType, searchSafe, page])
 
     return (
@@ -65,12 +99,24 @@ export default function SearchPanel({
                     <option value='r/'>{'subreddit'}</option>
                     <option value='u/'>{'user'}</option>
                     <option value='post'>{'post'}</option>
+                    {authenticated && <>
+                        <option value='my-r/'>{'my subreddits'}</option>
+                    </>}
                 </select>
-                <input
-                    type='search'
-                    placeholder='Search'
-                    onChange={event => setSearchInput(event.target.value)}
-                />
+
+                {myStuff ? (
+                    <input
+                        type='search'
+                        placeholder='Filter'
+                        onChange={event => setLocalSearch(event.target.value)}
+                    />
+                ) : (
+                    <input
+                        type='search'
+                        placeholder='Search'
+                        onChange={event => setSearchInput(event.target.value)}
+                    />
+                )}
             </div>
 
             <div 
@@ -80,7 +126,11 @@ export default function SearchPanel({
                 onMouseEnter={() => setOpened(true)}
                 // onMouseLeave={() => setOpened(false)}
             >
-                {items.map((item: any, index) => (
+                {(myStuff 
+                    ? items.filter(item => item.display_name.toLowerCase().includes(localSearch)) 
+                    // ? items
+                    : items
+                ).map((item: any, index) => (
                     <div 
                         key={item.id ?? index} 
                         className={styles.Item} 
