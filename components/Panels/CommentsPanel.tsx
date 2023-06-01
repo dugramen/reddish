@@ -6,6 +6,8 @@ import { fetchData } from "../utils";
 
 export default function CommentsPanel({permalink, setRef}) {
     const [comments, setComments] = React.useState<any>()
+    const [current, setCurrent] = React.useState<any>(null)
+
 
     React.useEffect(() => {
         if (permalink) {
@@ -22,6 +24,8 @@ export default function CommentsPanel({permalink, setRef}) {
             {comments?.children?.map((comment, index) => (
                 <EntryComment
                     comment={comment}
+                    current={current}
+                    setCurrent={setCurrent}
                     key={comment?.data?.permalink ?? index}
                 />
             )) ?? []}

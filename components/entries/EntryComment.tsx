@@ -5,30 +5,40 @@ import s_entr from '../../styles/Entry.module.scss'
 import parse from 'html-react-parser'
 
 export default function EntryComment(props) {
-    const {comment} = props
+    const {comment, current, setCurrent} = props
     const styles = {...s_list, ...s_entr}
     const stopPropagation = (e) => e.stopPropagation()
-
+    
     const [collapsed, setCollapsed] = React.useState(false)
     let parsedComment = !collapsed && parse(comment?.data?.body_html ?? '')
     if (typeof parsedComment === 'string') {
         parsedComment = parse(parsedComment)
     }
 
+    const isCurrent = current === comment?.data?.id
+
     return (
     <div 
         key={comment?.data?.permalink}
-        className={`${styles.article} ${styles.comment}  ${collapsed && styles.collapsed}`}
-        onClick={e => {
-            stopPropagation(e)
-            setCollapsed(!collapsed)
-        }}
-        onMouseEnter={stopPropagation}
-        onMouseOver={stopPropagation}
-        onMouseMove={stopPropagation}
-    >
+        className={`
+            ${styles.article} 
+            ${styles.comment} 
+            ${collapsed && styles.collapsed}
+            ${isCurrent && styles.current }
+        `}
+        // onClick={e => {
+        //     stopPropagation(e)
+        //     setCollapsed(!collapsed)
+        // }}
+        // onMouseOver={stopPropagation}
+        // onMouseMove={stopPropagation}
+        >
         <div className={styles.postLabelContainer}>
-            <div className={styles.subtext}>
+            <div className={styles.subtext}
+                onClick={() => setCollapsed(old => !old)}
+                onMouseEnter={() => setCurrent(comment?.data?.id ?? '')}
+                onMouseLeave={() => isCurrent && setCurrent(null)}
+            >
                 <img
                     src={comment}
                     alt=""
@@ -68,7 +78,12 @@ export default function EntryComment(props) {
                 // && comment?.data?.replies?.kind === 't1'
                 && comment?.data?.replies?.data?.children?.map(reply => (
                     reply?.kind === 't1'
-                    ? <EntryComment comment={reply} key={reply?.data?.permalink}/>
+                    ? <EntryComment 
+                        comment={reply} 
+                        current={current}
+                        setCurrent={setCurrent}
+                        key={reply?.data?.permalink}
+                    />
                     : '...'
                 ))
                 }
