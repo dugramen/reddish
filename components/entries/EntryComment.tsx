@@ -3,6 +3,7 @@ import React from "react";
 import s_list from '../../styles/Listing.module.scss'
 import s_entr from '../../styles/Entry.module.scss'
 import parse from 'html-react-parser'
+import { fetchAuth } from "../utils";
 
 export default function EntryComment(props) {
     const {comment, current, setCurrent} = props
@@ -32,7 +33,7 @@ export default function EntryComment(props) {
         // }}
         // onMouseOver={stopPropagation}
         // onMouseMove={stopPropagation}
-        >
+    >
         <div className={styles.postLabelContainer}>
             <div className={styles.subtext}
                 onClick={() => setCollapsed(old => !old)}
@@ -62,6 +63,21 @@ export default function EntryComment(props) {
             {/* {!collapsed && comment?.data?.body} */}
             
             {parsedComment}
+
+            <button onClick={() => {
+                fetchAuth('https://oauth.reddit.com/api/vote', {
+                    method: "POST",
+                    body: new URLSearchParams({
+                        id: `${comment.data.name}`,
+                        dir: '1',
+                        headers: JSON.stringify({
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        })
+                    }),
+                })
+            }}>
+                Upvote
+            </button>
 
             {/* <div>
                 {!collapsed && parse(comment?.data?.body_html ?? '')}

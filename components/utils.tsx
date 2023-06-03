@@ -1,7 +1,7 @@
 import Image from "next/image"
 
-export function fetchAuth(url: string) {
-  return fetch('api/reddit/?url=' + encodeURIComponent(url) + `&auth=1`)
+export function fetchAuth(url: string, options: RequestInit | undefined = undefined) {
+  return fetch('api/reddit/?url=' + encodeURIComponent(url) + `&auth=1`, options)
 }
 
 export function fetchData(url: string, setter = (a: any) => {}): Promise<any> {

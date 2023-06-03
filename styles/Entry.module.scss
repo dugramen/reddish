@@ -13,10 +13,23 @@
 
     // white-space: pre;
 
+    position: relative;
+
     &:hover {
-        background: none;
+        // background: none;
         border-left: 4px solid hsl(0, 0%, 25%);
+        transform: translateX(4px);
     }
+
+    &.current::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        border-left: 4px solid hsl(0, 0%, 25%);
+        // transform: translateX(0);
+    }
+
     &:active {
         transform: none;
     }    

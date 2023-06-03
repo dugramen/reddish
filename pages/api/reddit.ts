@@ -2,6 +2,7 @@ import Cors from 'cors';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import {getCookie, setCookie} from 'cookies-next';
 import { refreshAccessToken } from '../../components/Login';
+import queryString from 'query-string';
 
 function initMiddleware(middleware) {
     return (req, res) => new Promise((resolve, reject) => {
@@ -24,15 +25,20 @@ const cors = initMiddleware(
 );
 
 
-function fetchReddit(url, token, req, res, hasRefreshed = false) {
-    return fetch(url, {
-        method: 'GET',
+function fetchReddit({url, token, req, res, method, body, headers}, hasRefreshed = false) {
+    const options = {
+        method: method || 'GET',
         headers: {
             Authorization: `Bearer ${token}`,
-            content_type: "application/json",
+            "Content-Type": "application/json",
+            ...headers
         },
-    })
+        body: body || undefined
+    }
+    // console.log('head  - ' , options)
+    return fetch(url, options)
     .then(async response => {
+        // console.log(response)
         // console.log(response)
         if (response.status === 200) {
             return response
@@ -43,7 +49,7 @@ function fetchReddit(url, token, req, res, hasRefreshed = false) {
         }
         else if (response.status === 403 || response.status === 401 || response.status === 404) {
             const newToken = await refreshAccessToken(req, res)
-            return fetchReddit(url, newToken, req, res, true)
+            return fetchReddit({url, token: newToken, req, res, method, body, headers}, true)
             
         }
     })
@@ -58,19 +64,29 @@ export default async function handler(
     await cors(req, res);
     const rawQueryUrl = req.query.url as string
     const auth = req.query.auth
+    let {method, body: {headers, ...body}} = req
 
     const token = getCookie('access_token', {req, res})
-    // console.log(token)
-    // const prefix = "https://api.reddit.com/"
     let url = decodeURIComponent(rawQueryUrl ?? '')
+
+
+    body = queryString.stringify(body)
+    headers = headers ? JSON.parse(decodeURIComponent(headers ?? '')) : {};
+    // headers = (headers && JSON.parse(body.headers)) ?? {}
+
     
+    if (method) {
+        console.log(method)
+        console.dir(body)
+        console.log(headers)
+    }
     
     let result 
     if (!auth) {
         result = await fetch(url)
         console.log('should run')
     } else {
-        result = await fetchReddit(url, token, req, res)
+        result = await fetchReddit({url, token, req, res, method, body, headers})
         console.log('should not run')
     }
     const data = await result?.json?.()
