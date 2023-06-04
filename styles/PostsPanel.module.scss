@@ -62,12 +62,24 @@
     padding: 12px;
     gap: 4px;
 
-    & :first-child {
-        margin-right: auto;
+    .side {
+        display: flex;
+        gap: 4px;
+        
+        &.right {
+            margin-left: auto;
+        }
+        &.left {
+            margin-right: auto;
+        }
     }
-    & :last-child {
-        margin-left: auto;
-    }
+
+    // & :first-child {
+    //     margin-right: auto;
+    // }
+    // & :last-child {
+    //     margin-left: auto;
+    // }
 }
 
 

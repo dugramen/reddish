@@ -4,6 +4,7 @@ import s_list from '../../styles/Listing.module.scss'
 import s_entr from '../../styles/Entry.module.scss'
 import parse from 'html-react-parser'
 import { fetchAuth } from "../utils";
+import Vote from "../Vote";
 
 export default function EntryComment(props) {
     const {comment, current, setCurrent} = props
@@ -64,7 +65,8 @@ export default function EntryComment(props) {
             
             {parsedComment}
 
-            <button onClick={() => {
+            <Vote id={comment.data.name}></Vote>
+            {/* <button onClick={() => {
                 fetchAuth('https://oauth.reddit.com/api/vote', {
                     method: "POST",
                     body: new URLSearchParams({
@@ -77,7 +79,7 @@ export default function EntryComment(props) {
                 })
             }}>
                 Upvote
-            </button>
+            </button> */}
 
             {/* <div>
                 {!collapsed && parse(comment?.data?.body_html ?? '')}

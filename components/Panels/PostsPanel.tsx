@@ -7,6 +7,7 @@ import CommentsPanel from './CommentsPanel';
 import anime from 'animejs/lib/anime.es.js';
 import ImageGallery from 'react-image-gallery';
 import SearchPanel from './SearchPanel';
+import Vote from '../Vote';
 
 function st(strings, ...values) {
     const wholeString = strings.reduce((result, str, i) => {
@@ -363,9 +364,11 @@ function GalleryControls({
             </div>
             
             <div className={st`controls-container`}>
-                <button onClick={() => setSearchOpen(true)}>
-                    {`r/${subreddit}`}
-                </button>
+                <div className={st`left` + st`side`}>
+                    <button onClick={() => setSearchOpen(true)}>
+                        {`r/${subreddit}`}
+                    </button>
+                </div>
 
                 <button
                     onClick={previousPost}
@@ -380,10 +383,13 @@ function GalleryControls({
                     onClick={nextPost}
                 >Next</button>
 
+                <div className={st`right` + st`side`}>
+                    <Vote id={currentPost.name}/>
 
-                <button onClick={() => setCommentsOpen(true)}>
-                    Comments
-                </button>
+                    <button onClick={() => setCommentsOpen(true)}>
+                        Comments
+                    </button>
+                </div>
             </div>
         </div>
     )
