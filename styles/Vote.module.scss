@@ -1,0 +1,30 @@
+
+.Modal {
+    position: fixed;
+    inset: 0;
+    background-color: hsl(0, 0%, 0%, .5);
+    display: grid;
+    place-content: center;
+    z-index: 10;
+    pointer-events: none;
+
+    &.open {
+        pointer-events: all;
+        opacity: 1;
+    }
+    &.closed {
+        pointer-events: none;
+        opacity: 0;
+    }
+}
+
+.Reply {
+    width: 200px;
+    height: 200px;
+    background: purple;
+
+    textarea {
+        width: 200px;
+        height: 200px;
+    }
+}

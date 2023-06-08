@@ -1,4 +1,4 @@
-import {useState, useEffect, useRef, Children, memo} from 'react';
+import {useState, useEffect, useRef, createContext, Children, memo, use, useCallback} from 'react';
 import styles from '../../styles/PostsPanel.module.scss';
 import { ImageLoaded, fetchData } from '../utils';
 import parse from 'html-react-parser';
@@ -8,6 +8,8 @@ import anime from 'animejs/lib/anime.es.js';
 import ImageGallery from 'react-image-gallery';
 import SearchPanel from './SearchPanel';
 import Vote from '../Vote';
+
+export const ModalsContext = createContext<[Object, Function]>([{}, () => {}])
 
 function st(strings, ...values) {
     const wholeString = strings.reduce((result, str, i) => {
@@ -24,6 +26,7 @@ export default function PostsPanel(props) {
     const [listing, setListing] = useState<any>({})
     const [searchOpen, setSearchOpen] = useState(false)
     const [commentsOpen, setCommentsOpen] = useState(false)
+    const [activeModals, setActiveModals] = useState({})
     
     const [searchType, setSearchType] = useState('r/')
     const [searchSafe, setSearchSafe] = useState(false)
@@ -99,7 +102,7 @@ export default function PostsPanel(props) {
 
     const handleKeyPress = (event) => {
         const {key} = event
-        console.log(key);
+        // console.log(key);
         holdMap.current = {
             ...holdMap.current,
             [key]: (holdMap.current[key] ?? 0) + 1
@@ -115,7 +118,9 @@ export default function PostsPanel(props) {
             // 'ArrowUp': null,
             // 'ArrowDown': null,
         };
-        m[key]?.();
+        const modalLength = Object.keys(activeModals).length
+        // console.log('active modals - ', modalLength, activeModals)
+        modalLength <= 0 && m[key]?.();
     }
 
     const handleKeyRelease = (event) => {
@@ -165,6 +170,10 @@ export default function PostsPanel(props) {
     
 
     useEffect(() => {
+        console.log('modals - ', activeModals)
+    }, [activeModals])
+
+    useEffect(() => {
         const thumb = thumbnailContainerRef.current
         const el = currentThumbnail
         if (!thumb || !el) {return}
@@ -184,7 +193,7 @@ export default function PostsPanel(props) {
             removeEventListener('keydown', handleKeyPress)
             removeEventListener('keyup', handleKeyRelease)
         }
-    }, [listing])
+    }, [listing, activeModals])
 
     useEffect(() => {
         if (commentsOpen || searchOpen) {
@@ -207,125 +216,127 @@ export default function PostsPanel(props) {
     }, [page])
 
     return (
-        <div className={st`PostsPanel`}>
-            {['left', 'right', 'bottom', 'top'].map(side => (
-                <div
-                    key={side}
+        <ModalsContext.Provider value={[activeModals, setActiveModals]}>
+            <div className={st`PostsPanel`}>
+                {['left', 'right', 'bottom', 'top'].map(side => (
+                    <div
+                        key={side}
+                        className={
+                            st`edges` + 
+                            st`${side}` +
+                            (controlsShown ? st`shown` : '')
+                        }
+                        onMouseEnter={event => {
+                            console.log('entered ' + side + ' side')
+                            setControlsShown(true)
+                        }}
+                    >
+                    </div>
+                ))}
+
+                <FloatingPanel 
+                    panelOpen={searchOpen} 
+                    setPanelOpen={setSearchOpen} 
+                    controlsShown={controlsShown} 
+                    setControlsShown={setControlsShown} 
+                    extraStyle={undefined}
+                >
+                    <SearchPanel 
+                        opened={searchOpen} 
+                        setOpened={setSearchOpen} 
+                        {...{
+                            searchType, setSearchType,
+                            searchSafe, setSearchSafe,
+                            subreddit, setSubreddit
+                        }}            
+                    />
+                </FloatingPanel>
+
+                <FloatingPanel 
+                    panelOpen={commentsOpen} 
+                    setPanelOpen={setCommentsOpen} 
+                    controlsShown={controlsShown} 
+                    setControlsShown={setControlsShown} 
+                    side='right'
+                    label='Comments'
+                >
+                    <CommentsPanel 
+                        permalink={currentPost?.permalink} 
+                        setRef={undefined}                
+                    />
+                </FloatingPanel>
+
+                <Post
+                    item={currentPost}
+                    refFunc={div => postRef.current = div}
                     className={
-                        st`edges` + 
-                        st`${side}` +
+                        (fitHeight ? st`fit-height` : '') + 
                         (controlsShown ? st`shown` : '')
                     }
-                    onMouseEnter={event => {
-                        console.log('entered ' + side + ' side')
-                        setControlsShown(true)
+                    extra={{
+                        onMouseEnter: () => setControlsShown(false)
                     }}
-                >
-                </div>
-            ))}
+                />
 
-            <FloatingPanel 
-                panelOpen={searchOpen} 
-                setPanelOpen={setSearchOpen} 
-                controlsShown={controlsShown} 
-                setControlsShown={setControlsShown} 
-                extraStyle={undefined}
-            >
-                <SearchPanel 
-                    opened={searchOpen} 
-                    setOpened={setSearchOpen} 
+                <GalleryControls 
                     {...{
-                        searchType, setSearchType,
-                        searchSafe, setSearchSafe,
-                        subreddit, setSubreddit
-                    }}            
+                        controlsShown, setControlsShown, handleScrollH, 
+                        thumbnailContainerRef, items, currentPost, setCurrentPost, 
+                        nextPost, previousPost, fitHeight, setFitHeight, 
+                        setCurrentThumbnail, subreddit, setSearchOpen, setCommentsOpen
+                    }}         
                 />
-            </FloatingPanel>
 
-            <FloatingPanel 
-                panelOpen={commentsOpen} 
-                setPanelOpen={setCommentsOpen} 
-                controlsShown={controlsShown} 
-                setControlsShown={setControlsShown} 
-                side='right'
-                label='Comments'
-            >
-                <CommentsPanel 
-                    permalink={currentPost?.permalink} 
-                    setRef={undefined}                
-                />
-            </FloatingPanel>
-
-            <Post
-                item={currentPost}
-                refFunc={div => postRef.current = div}
-                className={
-                    (fitHeight ? st`fit-height` : '') + 
-                    (controlsShown ? st`shown` : '')
-                }
-                extra={{
-                    onMouseEnter: () => setControlsShown(false)
-                }}
-            />
-
-            <GalleryControls 
-                {...{
-                    controlsShown, setControlsShown, handleScrollH, 
-                    thumbnailContainerRef, items, currentPost, setCurrentPost, 
-                    nextPost, previousPost, fitHeight, setFitHeight, 
-                    setCurrentThumbnail, subreddit, setSearchOpen, setCommentsOpen
-                }}         
-            />
-
-            {/* {currentPost && <div 
-                className={st`gallery-controls` + (controlsShown ? st`shown` : '')}
-                onMouseEnter={() => setControlsShown(true)}
-            >
-                <div 
-                    className={st`thumbnails-container`}
-                    onScroll={handleScrollH}
-                    ref={thumbnailContainerRef}
+                {/* {currentPost && <div 
+                    className={st`gallery-controls` + (controlsShown ? st`shown` : '')}
+                    onMouseEnter={() => setControlsShown(true)}
                 >
-                    {items.map(item => (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                            className={item.id === currentPost.id ? st`current` : ''}
-                            src={item.thumbnail}
-                            alt=''
-                            key={item.id}
-                            onClick={() => setCurrentPost(item)}
-                            ref={el => {
-                                if (item.id === currentPost.id) {
-                                    const thumb = thumbnailContainerRef.current
-                                    if (!thumb || !el) {return}
-                                    const destination = Math.max(
-                                        Math.min(thumb.scrollLeft, el.offsetLeft),
-                                        el.offsetLeft - thumb.clientWidth + el.clientWidth + 8
-                                    )
-                                    thumb.scrollTo({
-                                        left: destination
-                                    })
-                                }
-                            }}
-                        />
-                    ))}
-                </div>
-                
-                <div className={st`controls-container`}>
-                    <button
-                        onClick={previousPost}
-                        >Prev</button>
-                    <button>Play</button>
-                    <button
-                        onClick={nextPost}
-                    >Next</button>
+                    <div 
+                        className={st`thumbnails-container`}
+                        onScroll={handleScrollH}
+                        ref={thumbnailContainerRef}
+                    >
+                        {items.map(item => (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                                className={item.id === currentPost.id ? st`current` : ''}
+                                src={item.thumbnail}
+                                alt=''
+                                key={item.id}
+                                onClick={() => setCurrentPost(item)}
+                                ref={el => {
+                                    if (item.id === currentPost.id) {
+                                        const thumb = thumbnailContainerRef.current
+                                        if (!thumb || !el) {return}
+                                        const destination = Math.max(
+                                            Math.min(thumb.scrollLeft, el.offsetLeft),
+                                            el.offsetLeft - thumb.clientWidth + el.clientWidth + 8
+                                        )
+                                        thumb.scrollTo({
+                                            left: destination
+                                        })
+                                    }
+                                }}
+                            />
+                        ))}
+                    </div>
+                    
+                    <div className={st`controls-container`}>
+                        <button
+                            onClick={previousPost}
+                            >Prev</button>
+                        <button>Play</button>
+                        <button
+                            onClick={nextPost}
+                        >Next</button>
 
-                    <button
-                        onClick={() => setFitHeight(old => !old)}
-                    >{fitHeight ? 'Clamp width' : 'Clamp Height'}</button>
-                </div>
-            </div>} */}
-        </div>
+                        <button
+                            onClick={() => setFitHeight(old => !old)}
+                        >{fitHeight ? 'Clamp width' : 'Clamp Height'}</button>
+                    </div>
+                </div>} */}
+            </div>
+        </ModalsContext.Provider>
     )
 }
 
