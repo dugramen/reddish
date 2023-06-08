@@ -37,6 +37,8 @@ export default function Home(props) {
                     searchSafe={false}                
                 />
             </AuthContext.Provider>
+
+            <div id="modal-portal-container"/>
         </div>
     );
 }
