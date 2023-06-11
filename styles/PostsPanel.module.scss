@@ -57,7 +57,8 @@
 }
 
 .controls-container {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
     width: 100%;
     padding: 12px;
     gap: 4px;
@@ -65,7 +66,7 @@
     .side {
         display: flex;
         gap: 4px;
-        
+
         &.right {
             margin-left: auto;
         }

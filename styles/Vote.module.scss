@@ -28,3 +28,13 @@
         height: 200px;
     }
 }
+
+.About {
+    background: hsl(0, 0%, 15%);
+    overflow: auto;
+    max-height: calc(100vh - 100px);
+    max-width: calc(100vw - 100px);
+    padding: 50px;
+    inset: 50px;
+    border-radius: 20px;
+}

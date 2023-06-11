@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import {useState, useEffect, useRef, createContext, Children, memo, use, useCallback} from 'react';
 import styles from '../../styles/PostsPanel.module.scss';
 import { ImageLoaded, fetchData } from '../utils';
@@ -8,6 +9,7 @@ import anime from 'animejs/lib/anime.es.js';
 import ImageGallery from 'react-image-gallery';
 import SearchPanel from './SearchPanel';
 import Vote from '../Vote';
+import SubActions from '../SubActions';
 
 export const ModalsContext = createContext<[Object, Function]>([{}, () => {}])
 
@@ -39,7 +41,6 @@ export default function PostsPanel(props) {
     const [controlsShown, setControlsShown] = useState(false)
     
     
-
     // items = items.filter(item => item.media_metadata)
 
     // const commentsRef = useRef<any>(null)
@@ -95,10 +96,6 @@ export default function PostsPanel(props) {
         }
     }
 
-    function loadMore() {
-        setPage(`&after=${items.at(-1)?.name ?? ''}`)
-        handleFetch()
-    }
 
     const handleKeyPress = (event) => {
         const {key} = event
@@ -132,15 +129,16 @@ export default function PostsPanel(props) {
         }
     }
 
-    function handleFetch(_page = page) {
+    const handleFetch = (_page = page) => {
         const searchPref = searchType === 'my-r/' ? 'r/' : searchType
         const url = (
             searchType === "u/" 
             ? `https://api.reddit.com/user/${subreddit}/submitted` 
             : `https://api.reddit.com/${searchPref}${subreddit}`
         ) + `?raw_json=1&count=25${_page ?? ""}`
-
-        
+            
+        console.log('choo - ', url)
+            
         // `https://api.reddit.com/${searchPref}${subreddit}?raw_json=1&count=25${_page ?? ""}`
         return new Promise((res) => {
             fetchData(url, d => {
@@ -160,7 +158,12 @@ export default function PostsPanel(props) {
         })
     }
 
-    function handleScrollH(event) {
+    const loadMore = () => {
+        setPage(`&after=${items.at(-1)?.name ?? ''}`)
+        // handleFetch()
+    }
+
+    const handleScrollH = (event) => {
         const {scrollLeft, clientWidth, scrollWidth} = event.target
         
         if (scrollLeft + clientWidth >= scrollWidth - 2) {
@@ -169,9 +172,9 @@ export default function PostsPanel(props) {
     }
     
 
-    useEffect(() => {
-        console.log('modals - ', activeModals)
-    }, [activeModals])
+    // useEffect(() => {
+    //     console.log('modals - ', activeModals)
+    // }, [activeModals])
 
     useEffect(() => {
         const thumb = thumbnailContainerRef.current
@@ -283,7 +286,8 @@ export default function PostsPanel(props) {
                         controlsShown, setControlsShown, handleScrollH, 
                         thumbnailContainerRef, items, currentPost, setCurrentPost, 
                         nextPost, previousPost, fitHeight, setFitHeight, 
-                        setCurrentThumbnail, subreddit, setSearchOpen, setCommentsOpen
+                        setCurrentThumbnail, subreddit, setSearchOpen, setCommentsOpen,
+                        searchType
                     }}         
                 />
 
@@ -345,7 +349,8 @@ function GalleryControls({
     handleScrollH, thumbnailContainerRef,
     items, currentPost, setCurrentPost,
     nextPost, previousPost, fitHeight, setFitHeight, 
-    setCurrentThumbnail, subreddit, setSearchOpen, setCommentsOpen
+    setCurrentThumbnail, subreddit, setSearchOpen, 
+    setCommentsOpen, searchType
 }) {
     return (
         <div 
@@ -379,20 +384,23 @@ function GalleryControls({
                     <button onClick={() => setSearchOpen(true)}>
                         {`r/${subreddit}`}
                     </button>
+
+                    <SubActions id={subreddit} isSub={searchType === 'r/'}/>
                 </div>
 
-                <button
-                    onClick={previousPost}
-                >Prev</button>
+                <div>
+                    <button
+                        onClick={previousPost}
+                    >Prev</button>
 
-                {/* <button>Play</button> */}
-                <button
-                    onClick={() => setFitHeight(old => !old)}
-                >{fitHeight ? 'Clamp width' : 'Clamp Height'}</button>
+                    <button
+                        onClick={() => setFitHeight(old => !old)}
+                    >{fitHeight ? 'Clamp width' : 'Clamp Height'}</button>
 
-                <button
-                    onClick={nextPost}
-                >Next</button>
+                    <button
+                        onClick={nextPost}
+                    >Next</button>
+                </div>
 
                 <div className={st`right` + st`side`}>
                     <Vote id={currentPost.name}/>

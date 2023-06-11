@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import searchStyle from '../../styles/Search.module.scss';
 import listingStyle from '../../styles/Listing.module.scss';
 import EntryPost from "../entries/EntryPost";
@@ -31,7 +31,7 @@ export default function Search({search, type, setSubreddit, setPrefix, setCurren
             : value?.data?.title
     )
 
-    const urlFormatter = (p) => {
+    const urlFormatter = useCallback((p) => {
         const pageQuery = p
         // const typeQuery = type === '' ? '' : `&type=${type}`
         const typeQuery = `&type=${{'r/': 'sr', 'u/': 'user'}[type] ?? ''}`
@@ -39,9 +39,9 @@ export default function Search({search, type, setSubreddit, setPrefix, setCurren
         const url = `https://www.reddit.com/search/.json?q=${search}${pageQuery}${typeQuery}${safeQuery}&raw_json=1`
         // console.log(url)
         return url
-    }
+    }, [safeSearch, search, type])
 
-    function handleFetch(p) {
+    const handleFetch = useCallback((p) => {
         const url = urlFormatter(p)
         console.log(url)
         fetchData(url, (data: any) => {
@@ -50,23 +50,23 @@ export default function Search({search, type, setSubreddit, setPrefix, setCurren
             console.log(data)
             // setList(data?.data?.children?.reduce((accum, val) => ({...accum, [val?.data?.permalink ?? val?.data?.id]: val}), list) ?? {})
         })
-    }
+    }, [urlFormatter])
 
     React.useEffect(() => {
         setIsListingVisible(type !== null)
-    }, [type])
+    }, [type, setIsListingVisible])
 
     // These are for refreshing listings
     React.useEffect(() => {
         handleFetch(page)
-    }, [page])
+    }, [page, handleFetch])
 
     React.useEffect(() => {
         // setList([])
         setPage('')
         handleFetch(null)
         console.log(type)
-    }, [search, type, safeSearch])
+    }, [search, type, safeSearch, handleFetch])
 
     const searchOptionMap = [
         ['Sub', 'sr'],

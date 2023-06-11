@@ -11,7 +11,7 @@ export default function Page(props) {
                 router.push('/')
             }, 2000)
         }
-    }, [props.authenticated])
+    }, [props.authenticated, router])
 
     return (
         <div>

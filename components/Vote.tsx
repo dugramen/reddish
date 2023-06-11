@@ -64,8 +64,8 @@ function ReplyButton({id}) {
     const [open, setOpen] = useState(false)
 
     return <Modal
-        open={open}
-        setOpen={setOpen}
+        value={open}
+        onChange={setOpen}
         buttonContent={"↩️ Reply"}
         id={id}
     >
@@ -78,17 +78,17 @@ function ReplyButton({id}) {
                 onClick={() => {
                     console.log(text)
                     setOpen(false)
-                    text && fetchAuth('https://oauth.reddit.com/api/comment', {
-                        method: "POST",
-                        body: new URLSearchParams({
-                            parent: `${id}`,
-                            text: text,
-                            headers: JSON.stringify({
-                                'Content-Type': 'application/x-www-form-urlencoded',
-                                'User-Agent': 'Reddish:1.0 (by /u/dugtrioramen)',
-                            })
-                        })
-                    })
+                    // text && fetchAuth('https://oauth.reddit.com/api/comment', {
+                    //     method: "POST",
+                    //     body: new URLSearchParams({
+                    //         parent: `${id}`,
+                    //         text: text,
+                    //         headers: JSON.stringify({
+                    //             'Content-Type': 'application/x-www-form-urlencoded',
+                    //             'User-Agent': 'Reddish:1.0 (by /u/dugtrioramen)',
+                    //         })
+                    //     })
+                    // })
                 }}
             >
                 Submit
@@ -97,9 +97,20 @@ function ReplyButton({id}) {
     </Modal>
 }
 
-function Modal({open, setOpen, buttonContent, children, id}) {
+export function Modal(p: {value?, onChange?, buttonContent, children?, id}) {
+    const [open, setOpenRaw] = useState(p.value ?? false)
     const [activeModals, setActiveModals] = useContext(ModalsContext)
     const [portalContainer, setPortalContainer] = useState<HTMLElement>()
+
+    const setOpen = a => {``
+        p.onChange 
+        ? p.onChange(a)
+        : setOpenRaw(a)
+    }
+
+    useEffect(() => {
+        p.value !== undefined && setOpenRaw(p.value)
+    }, [p, p.value])
 
     useEffect(() => {
         setPortalContainer(document.getElementById('modal-portal-container')!)
@@ -109,18 +120,18 @@ function Modal({open, setOpen, buttonContent, children, id}) {
         if (open) {
             setActiveModals(old => ({
                 ...old,
-                [id]: true
+                [p.id]: true
             }))
         } else {
             setActiveModals( 
-                old => ( ( {[id]: leftOut = '', ...rest} ) => rest )(old) 
+                old => ( ( {[p.id]: leftOut = '', ...rest} ) => rest )(old) 
             )
         }
-    }, [open])
+    }, [open, p.id, setActiveModals])
 
     return <>
         <button onClick={() => setOpen(true)}>
-            {buttonContent ?? "Press Me"}
+            {p.buttonContent ?? "Press Me"}
         </button>
 
         {portalContainer && createPortal(
@@ -132,7 +143,7 @@ function Modal({open, setOpen, buttonContent, children, id}) {
                 onClick={() => setOpen(false)}
             >
                 <div onClick={e => e.stopPropagation()}>
-                    {children}
+                    {p.children}
                 </div>
             </div>
         , portalContainer)}

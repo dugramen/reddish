@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useContext } from 'react';
+import { useState, useEffect, useRef, useContext, useCallback } from 'react';
 import styles from '../../styles/SearchPanel.module.scss'; 
 import { ImageLoaded, fetchAuth, fetchData } from '../utils';
 import Image from 'next/image';
@@ -24,7 +24,18 @@ export default function SearchPanel({
     
     const authenticated = useContext(AuthContext)
 
-    function handleFetch() {
+    const handleFetchedData = useCallback((d) => {
+        console.log(d)
+        setListing(old => ({
+            ...(page.startsWith('&after') ? old : {}),
+            ...(d?.data?.children ?? []).reduce((acc, val) => ({
+                ...acc,
+                [val.data.id]: val.data
+            }), {}),
+        }))
+    }, [setListing, page])
+
+    const handleFetch = useCallback(() => {
         const pageQuery = page
         const typeQuery = `&type=${{'r/': 'sr', 'u/': 'user'}[searchType] ?? ''}`
         const safeQuery = searchSafe === false ? '&include_over_18=1' : ''
@@ -41,18 +52,7 @@ export default function SearchPanel({
         //         }), {}),
         //     }))
         // })
-    }
-
-    function handleFetchedData(d) {
-        console.log(d)
-        setListing(old => ({
-            ...(page.startsWith('&after') ? old : {}),
-            ...(d?.data?.children ?? []).reduce((acc, val) => ({
-                ...acc,
-                [val.data.id]: val.data
-            }), {}),
-        }))
-    }
+    }, [searchInput, page, searchType, handleFetchedData, searchSafe])
 
     function handleScroll(event) {
         if (!scrollRef.current) {return}
@@ -87,7 +87,7 @@ export default function SearchPanel({
         } else {
             handleFetch()
         }
-    }, [searchInput, searchType, searchSafe, page])
+    }, [searchInput, searchType, searchSafe, page, handleFetchedData, handleFetch, myStuff])
 
     return (
         <div className={styles.SearchPanel + ' SearchPanel'}>
@@ -101,7 +101,7 @@ export default function SearchPanel({
                     <option value='post'>{'post'}</option>
                     {authenticated && <>
                         <option value='my-r/'>{'my subreddits'}</option>
-                        
+
                     </>}
                 </select>
 
