@@ -65,7 +65,10 @@ export default function EntryComment(props) {
             
             {parsedComment}
 
-            <Vote id={comment.data.name}></Vote>
+            <div className={styles.VotingContainer}>
+                <Vote id={comment.data.name}></Vote>
+            </div>
+            
             {/* <button onClick={() => {
                 fetchAuth('https://oauth.reddit.com/api/vote', {
                     method: "POST",
@@ -85,27 +88,30 @@ export default function EntryComment(props) {
                 {!collapsed && parse(comment?.data?.body_html ?? '')}
             </div> */}
             
-            <div style={{
+        </div>
+        
+        <div 
+            className={styles.nestContainer}
+            style={{
                 // paddingLeft: '4px'
                 marginRight: '0'
             }}
-            >
-                {
-                !collapsed
-                && comment?.data?.repies !== ''
-                // && comment?.data?.replies?.kind === 't1'
-                && comment?.data?.replies?.data?.children?.map(reply => (
-                    reply?.kind === 't1'
-                    ? <EntryComment 
-                        comment={reply} 
-                        current={current}
-                        setCurrent={setCurrent}
-                        key={reply?.data?.permalink}
-                    />
-                    : '...'
-                ))
-                }
-            </div>
+        >
+            {
+            !collapsed
+            && comment?.data?.repies !== ''
+            // && comment?.data?.replies?.kind === 't1'
+            && comment?.data?.replies?.data?.children?.map(reply => (
+                reply?.kind === 't1'
+                ? <EntryComment 
+                    comment={reply} 
+                    current={current}
+                    setCurrent={setCurrent}
+                    key={reply?.data?.permalink}
+                />
+                : '...'
+            ))
+            }
         </div>
     </div>
     )

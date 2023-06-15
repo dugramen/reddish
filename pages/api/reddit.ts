@@ -31,6 +31,7 @@ function fetchReddit({url, token, req, res, method, body, headers}, hasRefreshed
         headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
+            'User-Agent': 'Reddish:1.0 (by /u/dugtrioramen)',
             ...headers
         },
         body: body || undefined
@@ -84,13 +85,19 @@ export default async function handler(
     let result 
     if (!auth) {
         result = await fetch(url)
-        console.log('should run')
+        console.log('no auth')
     } else {
         result = await fetchReddit({url, token, req, res, method, body, headers})
-        console.log('should not run')
+        console.log('authed ', result)
     }
-    const data = await result?.json?.()
-    // console.log('76 - ', url, data)
+
+    let data
+    try {
+        data = await result?.json?.()
+    } catch (error) {
+        console.error(error)
+    }
+    console.log('76 - ', url, data)
     res.json(data)
     
     

@@ -1,8 +1,9 @@
 import {getCookie, setCookie} from 'cookies-next';
 
+// const HOST = window.location.protocol + "//" + window.location.host;
 const DURATION = "permanent";
 const SCOPE = "identity edit flair history read vote save submit wikiread wikiedit mysubreddits ";
-const REDIRECT_URI = "http://localhost:3000/auth";
+const REDIRECT_URI = `http://localhost:3000/auth`;
 const RANDOM_STRING = "randomestringhere";
 const RESPONSE_TYPE = "code";
 const CLIENT_ID = "v3h0CQpo9aENBrnWF-lL_w";

@@ -4,7 +4,7 @@ import EntryComment from "../entries/EntryComment";
 import styles from '../../styles/CommentsPanel.module.scss';
 import { fetchData } from "../utils";
 
-export default function CommentsPanel({permalink, setRef}) {
+export default function CommentsPanel({permalink, setRef, open, setOpen}) {
     const [comments, setComments] = React.useState<any>()
     const [current, setCurrent] = React.useState<any>(null)
 
@@ -20,7 +20,7 @@ export default function CommentsPanel({permalink, setRef}) {
     }, [permalink])
 
     return (
-        <div className={styles.CommentsPanel} ref={el => setRef?.(el)}>
+        <div className={`${styles.CommentsPanel} ${open ? styles.open : styles.closed}`} ref={el => setRef?.(el)}>
             {comments?.children?.map((comment, index) => (
                 <EntryComment
                     comment={comment}

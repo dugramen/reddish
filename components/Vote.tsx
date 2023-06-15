@@ -6,9 +6,30 @@ import { AuthContext } from "../pages"
 import { ModalsContext } from "./Panels/PostsPanel";
 import { createPortal } from "react-dom";
 
+import { faCaretUp as upIcon, faCaretDown as downIcon } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
 export default function Vote({id}) {
     const [currentDir, setCurrentDir] = useState('0')
+    const [info, setInfo] = useState<any>({})
     const authenticated = useContext(AuthContext)
+
+    useEffect(() => {
+        fetchAuth(`https://oauth.reddit.com/api/info?id=${id}`)
+        .then(res => res.json())
+        .then(data => {
+            const inf = data?.data?.children?.[0]?.data
+            console.log(data)
+            setInfo(inf)
+            inf && setCurrentDir(
+                inf.likes === 'true' 
+                ? '1' 
+                : inf.likes === 'false' 
+                ? '-1' 
+                : '0'
+            )
+        })
+    }, [id])
 
     function vote(dir: '1' | '0' | '-1') {
         const newDir = dir === currentDir ? '0' : dir
@@ -25,18 +46,26 @@ export default function Vote({id}) {
         })
     }
     
-    if (!authenticated) {
-        return <></>
-    }
+    // if (!authenticated || !id) {
+    //     return <></>
+    // }
     return (
-        <div className="Vote">
-            <button 
+        <div className={st.VotingContainer}>
+            <FontAwesomeIcon
+                icon={upIcon}
                 onClick={() => vote('1')}
-            >👍</button>
+                className={`${st.iconButton} ${st.up}`}
+                />
 
-            <button
+            <div>
+                {info?.ups}
+            </div>
+
+            <FontAwesomeIcon
+                icon={downIcon}
                 onClick={() => vote('-1')}
-            >👎</button>
+                className={`${st.iconButton} ${st.down}`}
+            />
 
             <button onClick={() => {
                 fetchAuth('https://oauth.reddit.com/api/save', {
@@ -78,17 +107,17 @@ function ReplyButton({id}) {
                 onClick={() => {
                     console.log(text)
                     setOpen(false)
-                    // text && fetchAuth('https://oauth.reddit.com/api/comment', {
-                    //     method: "POST",
-                    //     body: new URLSearchParams({
-                    //         parent: `${id}`,
-                    //         text: text,
-                    //         headers: JSON.stringify({
-                    //             'Content-Type': 'application/x-www-form-urlencoded',
-                    //             'User-Agent': 'Reddish:1.0 (by /u/dugtrioramen)',
-                    //         })
-                    //     })
-                    // })
+                    text && fetchAuth('https://oauth.reddit.com/api/comment', {
+                        method: "POST",
+                        body: new URLSearchParams({
+                            parent: `${id}`,
+                            text: text,
+                            headers: JSON.stringify({
+                                'Content-Type': 'application/x-www-form-urlencoded',
+                                'User-Agent': 'Reddish:1.0 (by /u/dugtrioramen)',
+                            })
+                        })
+                    })
                 }}
             >
                 Submit

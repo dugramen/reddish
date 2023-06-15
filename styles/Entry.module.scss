@@ -18,7 +18,13 @@
     &:hover {
         // background: none;
         border-left: 4px solid hsl(0, 0%, 25%);
-        transform: translateX(4px);
+        
+        & > .postLabelContainer {
+            transform: translateX(4px);
+        }
+    }
+    &:has(.comment:hover) > .postLabelContainer {
+        transform: translateX(0px);
     }
 
     &.current::after {
@@ -33,6 +39,11 @@
     &:active {
         transform: none;
     }    
+}
+
+.VotingContainer {
+    display: flex;
+    gap: 2px;
 }
 
 .collapsed {

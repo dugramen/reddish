@@ -18,6 +18,32 @@
     }
 }
 
+.VotingContainer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+    
+    svg {
+        cursor: pointer;
+        height: 16px;
+        width: 16px;
+
+        &:hover {
+            background: hsl(0, 0%, .15);
+        }
+
+        &.up {
+            transform: translateY(1px);
+        }
+    
+        &.down {
+            transform: translateY(-1px);
+        }
+    }
+
+}
+
 .Reply {
     width: 200px;
     height: 200px;
@@ -37,4 +63,9 @@
     padding: 50px;
     inset: 50px;
     border-radius: 20px;
+}
+
+.flairsContainer {
+    display: flex;
+    flex-direction: column;
 }
