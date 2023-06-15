@@ -14,26 +14,29 @@ export default function Vote({id}) {
     const [info, setInfo] = useState<any>({})
     const authenticated = useContext(AuthContext)
 
-    useEffect(() => {
+    function fetchInfo() {
         fetchAuth(`https://oauth.reddit.com/api/info?id=${id}`)
         .then(res => res.json())
         .then(data => {
             const inf = data?.data?.children?.[0]?.data
-            console.log(data)
-            setInfo(inf)
-            inf && setCurrentDir(
-                inf.likes === 'true' 
+            const dir = inf?.likes === true 
                 ? '1' 
-                : inf.likes === 'false' 
+                : inf?.likes === false
                 ? '-1' 
                 : '0'
-            )
+            console.log(inf, inf?.likes)
+            setInfo(inf)
+            setCurrentDir(dir)
         })
+    }
+
+    useEffect(() => {
+        fetchInfo()
     }, [id])
 
     function vote(dir: '1' | '0' | '-1') {
         const newDir = dir === currentDir ? '0' : dir
-        setCurrentDir(newDir)
+        // setCurrentDir(newDir)
         fetchAuth('https://oauth.reddit.com/api/vote', {
             method: "POST",
             body: new URLSearchParams({
@@ -43,6 +46,9 @@ export default function Vote({id}) {
                     'Content-Type': 'application/x-www-form-urlencoded',
                 })
             }),
+        })
+        .then(() => {
+            fetchInfo()
         })
     }
     
@@ -54,17 +60,19 @@ export default function Vote({id}) {
             <FontAwesomeIcon
                 icon={upIcon}
                 onClick={() => vote('1')}
-                className={`${st.iconButton} ${st.up}`}
-                />
+                className={`${st.iconButton} ${st.up} ${currentDir === '1' && st.current}`}
+            />
 
             <div>
-                {info?.ups}
+                {info?.ups 
+                // + parseInt(currentDir)
+                }
             </div>
 
             <FontAwesomeIcon
                 icon={downIcon}
                 onClick={() => vote('-1')}
-                className={`${st.iconButton} ${st.down}`}
+                className={`${st.iconButton} ${st.down} ${currentDir === '-1' && st.current}`}
             />
 
             <button onClick={() => {

@@ -29,16 +29,24 @@
         height: 16px;
         width: 16px;
 
-        &:hover {
-            background: hsl(0, 0%, .15);
-        }
+        // &:hover {
+        //     background: hsl(0, 0%, .15);
+        // }
 
         &.up {
             transform: translateY(1px);
+            &.current {
+                filter: invert(42%) sepia(78%) saturate(1561%) hue-rotate(330deg) brightness(78%) contrast(107%);
+                // color: #cf3c3c;
+            }
         }
-    
+        
         &.down {
             transform: translateY(-1px);
+            &.current {
+                filter: invert(37%) sepia(76%) saturate(1019%) hue-rotate(201deg) brightness(83%) contrast(97%);
+                color: #3c5ecf;
+            }
         }
     }
 
