@@ -45,7 +45,15 @@
             transform: translateY(-1px);
             &.current {
                 filter: invert(37%) sepia(76%) saturate(1019%) hue-rotate(201deg) brightness(83%) contrast(97%);
-                color: #3c5ecf;
+                // color: #3c5ecf;
+            }
+        }
+
+        &.save {
+            &.current {
+                filter: brightness(0) saturate(100%) invert(63%) sepia(91%) saturate(391%) hue-rotate(2deg) brightness(89%) contrast(95%);
+
+                color: #ffd700;
             }
         }
     }

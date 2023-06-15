@@ -6,11 +6,12 @@ import { AuthContext } from "../pages"
 import { ModalsContext } from "./Panels/PostsPanel";
 import { createPortal } from "react-dom";
 
-import { faCaretUp as upIcon, faCaretDown as downIcon } from '@fortawesome/free-solid-svg-icons';
+import { faCaretUp as upIcon, faCaretDown as downIcon, faBookmark as saveIcon } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 export default function Vote({id}) {
     const [currentDir, setCurrentDir] = useState('0')
+    const [saved, setSaved] = useState(false)
     const [info, setInfo] = useState<any>({})
     const authenticated = useContext(AuthContext)
 
@@ -24,9 +25,10 @@ export default function Vote({id}) {
                 : inf?.likes === false
                 ? '-1' 
                 : '0'
-            console.log(inf, inf?.likes)
+            console.log(inf)
             setInfo(inf)
-            setCurrentDir(dir)
+            setCurrentDir(dir ?? '0')
+            setSaved(inf?.saved ?? false)
         })
     }
 
@@ -46,6 +48,22 @@ export default function Vote({id}) {
                     'Content-Type': 'application/x-www-form-urlencoded',
                 })
             }),
+        })
+        .then(() => {
+            fetchInfo()
+        })
+    }
+
+    function save() {
+        fetchAuth(`https://oauth.reddit.com/api/${saved ? 'unsave': 'save'}`, {
+            method: "POST",
+            body: new URLSearchParams({
+                id: `${id}`,
+                headers: JSON.stringify({
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'User-Agent': 'Reddish:1.0 (by /u/dugtrioramen)',
+                })
+            })
         })
         .then(() => {
             fetchInfo()
@@ -75,7 +93,13 @@ export default function Vote({id}) {
                 className={`${st.iconButton} ${st.down} ${currentDir === '-1' && st.current}`}
             />
 
-            <button onClick={() => {
+            <FontAwesomeIcon
+                icon={saveIcon}
+                onClick={() => save()}
+                className={`${st.iconButton} ${st.save} ${saved && st.current}`}
+            />
+
+            {/* <button onClick={() => {
                 fetchAuth('https://oauth.reddit.com/api/save', {
                     method: "POST",
                     body: new URLSearchParams({
@@ -86,7 +110,7 @@ export default function Vote({id}) {
                         })
                     })
                 })
-            }}>⭐</button>
+            }}>⭐</button> */}
 
             {/* <button>↩️</button> */}
 
