@@ -15,7 +15,9 @@
     max-width: 500px;
     // flex: 1;
     overflow: auto;
+    overflow-x: hidden;
 
+    padding-right: 8px;
     padding-bottom: 200px;
 
     background: hsl(0, 0%, 10%);

@@ -128,7 +128,7 @@ export default function SearchPanel({
                 // onMouseLeave={() => setOpened(false)}
             >
                 {(myStuff 
-                    ? items.filter(item => item.display_name.toLowerCase().includes(localSearch)) 
+                    ? items.filter(item => item.display_name_prefixed.toLowerCase().includes(localSearch)) 
                     // ? items
                     : items
                 ).map((item: any, index) => (
