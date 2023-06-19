@@ -13,6 +13,7 @@ import SubActions from '../SubActions';
 
 import { faForward, faBackward, faCropSimple } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useRouter } from 'next/router';
 
 
 export const ModalsContext = createContext<[Object, Function]>([{}, () => {}])
@@ -34,9 +35,34 @@ export default function PostsPanel(props) {
     const [commentsOpen, setCommentsOpen] = useState(false)
     const [activeModals, setActiveModals] = useState({})
     
-    const [searchType, setSearchType] = useState('r/')
-    const [searchSafe, setSearchSafe] = useState(false)
-    const [subreddit, setSubreddit] = useState('pokemon')
+    // const [searchType, setSearchType] = useState('r/')
+    // const [searchSafe, setSearchSafe] = useState(false)
+    // const [subreddit, setSubreddit] = useState('pokemon')
+
+    const router = useRouter()
+
+    const updateRoute = (newQuery: object) => router.push({
+        pathname: router.pathname,
+        query: {
+            ...router.query,
+            ...newQuery
+        }
+    }, undefined, {shallow: true})
+    const stringOrArray = a => Array.isArray(a) ? a[0] : a
+
+    const subreddit = stringOrArray(router.query.subreddit) ?? ''
+    const setSubreddit = sub => updateRoute({subreddit: sub})
+
+    const searchType = decodeURIComponent(stringOrArray(router.query.searchType) ?? 'r/')
+    const setSearchType = pref => updateRoute({searchType: encodeURIComponent(pref)})
+
+    const searchSafe = stringOrArray(router.query.searchSafe) ?? false
+    const setSearchSafe = safe => updateRoute({searchSafe: safe})
+
+    // const setCurrentPost = post => {
+    //     setCurrentPostRaw(post)
+    //     post?.id && updateRoute({postId: post.name})
+    // }
 
     const listingToItems = data => Object.values(data).map((item: any, index) => ({...item, index: index}))
     let items: any[] = listingToItems(listing)
@@ -55,12 +81,12 @@ export default function PostsPanel(props) {
 
     const previousPost = () => setCurrentPost(old => {
         console.log('preved ', items)
-        return currentPost ? items[Math.max(old.index - 1, 0)] : old
+        return old ? items[Math.max(old.index - 1, 0)] : old
     })
 
     const nextPost = () => setCurrentPost(old => {
         console.log('nexted ', items)
-        return currentPost ? items[Math.min(old.index + 1, items.length - 1)] : old
+        return old ? items[Math.min(old.index + 1, items.length - 1)] : old
     })
 
     const toggleFit = () => setFitHeight(old => !old)
@@ -384,20 +410,31 @@ function GalleryControls({
                         <SubActions id={subreddit} isSub={searchType === 'r/'}/>
                     </div>
 
-                    <div>
-                        <button onClick={previousPost}>
-                            <FontAwesomeIcon icon={faBackward}/>
-                        </button>
+                    <div className={st`center` + st`side`}>
+                        <FontAwesomeIcon 
+                            icon={faBackward}
+                            onClick={previousPost}
+                            className={st`button`}
+                            />
+                        {/* <button onClick={previousPost}>
+                        </button> */}
 
-                        <button
+                        <FontAwesomeIcon 
+                            icon={faCropSimple}
                             onClick={() => setFitHeight(old => !old)}
+                            className={st`button`}
+                        />
+                        {/* <button
                         >
-                            <FontAwesomeIcon icon={faCropSimple}/>
-                        </button>
+                        </button> */}
 
-                        <button onClick={nextPost}>
-                            <FontAwesomeIcon icon={faForward}/>
-                        </button>
+                        <FontAwesomeIcon 
+                            icon={faForward}
+                            onClick={nextPost}
+                            className={st`button`}  
+                        />
+                        {/* <button onClick={nextPost}>
+                        </button> */}
                     </div>
 
                     <div className={st`right` + st`side`}>
@@ -485,15 +522,17 @@ function Post({item, className='', extra={}, refFunc = (el) => {}, handlePostCli
             id='PostsMiniMapScrollContainer' 
             {...extra}
         > 
-            <div className={st`post-header`}>
-                <h3>{item.title}</h3>
-                <div>{`u/${item.author}`}</div>
-            </div>
 
             <div 
                 className={styles.Content} 
                 ref={refFunc} 
             >
+                {/* <div className={st`post-header`}> */}
+                    <h3 className={st`title`}>{item.title}</h3>
+                    <div className={st`info`}>{`u/${item.author}`}</div>
+                {/* </div> */}
+
+
                 {parse(item.selftext_html ?? '')}
 
                 {item.media_embed?.content && 
@@ -519,7 +558,7 @@ function Post({item, className='', extra={}, refFunc = (el) => {}, handlePostCli
                 {item.media_metadata &&
                     <ImageGallery
                         items={Object.entries(item.media_metadata).map((entry: any[]) => {
-                            const url = `https://i.redd.it/${entry[0]}.${entry[1].m.replace('image/', '')}`
+                            const url = `https://i.redd.it/${entry[0]}.${entry[1]?.m?.replace?.('image/', '')}`
                             return {
                                 original: url,
                                 thumbnail: url,
