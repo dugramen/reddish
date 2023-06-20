@@ -4,6 +4,8 @@ import { ImageLoaded, fetchAuth, fetchData } from '../utils';
 import Image from 'next/image';
 import Login from '../Login';
 import { AuthContext } from '../../pages';
+// import { useWindowSize } from "@uidotdev/usehooks";
+
 
 export default function SearchPanel({
     opened, setOpened,
@@ -18,6 +20,8 @@ export default function SearchPanel({
     const [searchInput, setSearchInput] = useState('')
     const [localSearch, setLocalSearch] = useState('')
     const items: any[] = Object.values(listing)
+
+    // const size = useWindowSize();
 
     const scrollRef = useRef<HTMLDivElement>(null)
     const myStuff = searchType.startsWith('my-')

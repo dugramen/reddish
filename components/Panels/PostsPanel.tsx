@@ -14,6 +14,7 @@ import SubActions from '../SubActions';
 import { faForward, faBackward, faCropSimple } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useRouter } from 'next/router';
+import { useWindowSize } from "@uidotdev/usehooks";
 
 
 export const ModalsContext = createContext<[Object, Function]>([{}, () => {}])
@@ -268,21 +269,6 @@ export default function PostsPanel(props) {
     return (
         <ModalsContext.Provider value={[activeModals, setActiveModals]}>
             <div className={st`PostsPanel`}>
-                {['bottom'].map(side => (
-                    <div
-                        key={side}
-                        className={
-                            st`edges` + 
-                            st`${side}` +
-                            (controlsShown ? st`shown` : '')
-                        }
-                        onMouseEnter={event => {
-                            console.log('entered ' + side + ' side')
-                            setControlsShown(true)
-                        }}
-                    >
-                    </div>
-                ))}
 
                 <FloatingPanel 
                     panelOpen={searchOpen} 
@@ -290,6 +276,7 @@ export default function PostsPanel(props) {
                     controlsShown={controlsShown} 
                     setControlsShown={setControlsShown} 
                     extraStyle={undefined}
+                    // className=''
                 >
                     <SearchPanel 
                         opened={searchOpen} 
@@ -302,7 +289,7 @@ export default function PostsPanel(props) {
                     />
                 </FloatingPanel>
 
-                {false && <FloatingPanel 
+                {/* {false && <FloatingPanel 
                     panelOpen={commentsOpen} 
                     setPanelOpen={setCommentsOpen} 
                     controlsShown={controlsShown} 
@@ -316,7 +303,7 @@ export default function PostsPanel(props) {
                         open={commentsOpen}
                         setOpen={setCommentsOpen}           
                     />
-                </FloatingPanel>}
+                </FloatingPanel>} */}
 
                 <Post
                     item={currentPost}
@@ -337,6 +324,22 @@ export default function PostsPanel(props) {
                     open={commentsOpen}
                     setOpen={setCommentsOpen}               
                 />
+
+                {['bottom'].map(side => (
+                    <div
+                        key={side}
+                        className={
+                            st`edges` + 
+                            st`${side}` +
+                            (controlsShown ? st`shown` : '')
+                        }
+                        onMouseEnter={event => {
+                            console.log('entered ' + side + ' side')
+                            setControlsShown(true)
+                        }}
+                    >
+                    </div>
+                ))}
 
                 <GalleryControls 
                     {...{
@@ -467,15 +470,19 @@ function FloatingPanel({
     side = 'left', label = 'Search',
     extraStyle = {}, className = '', children
 }) {
+    const size = useWindowSize()
+
     return (
         <div 
             className={
                 st`floating-panel` +
                 st`${side}` + 
                 (panelOpen ? st`open` : st`closed`) + 
+                (size.width <= 600 && ' floating ') + 
+                (panelOpen ? ' closed ' : ' open ') + 
                 className
             }
-            style={{...extraStyle,}}
+            style={{...extraStyle, zIndex: 10}}
         >
             <div 
                 className={st`bg-modal`}
@@ -486,20 +493,13 @@ function FloatingPanel({
                     st`edges` + 
                     st`${side}` +
                     (controlsShown ? st`shown` : '') +
-                    (panelOpen ? st`open` : '')
+                    (size.width <= 600 && ' floating ') +
+                    (panelOpen ? `${st`open`} open` : '')
                 }
                 onMouseEnter={event => {
                     !panelOpen && setControlsShown(true)
                 }}
-            >
-                {/* <div 
-                    className={st`clickable-edge`}
-                    onClick={() => {
-                        setPanelOpen(true)
-                        // setControlsShown(false)
-                    }}
-                > {label} </div> */}
-            </div>
+            />
             <div className={st`content-container`}>
                 {children}
             </div>

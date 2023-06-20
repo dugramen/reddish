@@ -11,8 +11,8 @@
     transition: .3s;
     max-height: 100%;
     min-height: 500px;
-    min-width: 400px;
-    max-width: 500px;
+    min-width: 300px;
+    max-width: calc(min(500px, 50%));
     // flex: 1;
     overflow: auto;
     overflow-x: hidden;

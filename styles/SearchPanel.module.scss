@@ -13,6 +13,11 @@
 .InputsContainer {
     display: flex;
     gap: 8px;
+
+    input[type=search] {
+        min-width: 0;
+    }
+
     & > * {
         color: lightgray;
         outline: none;

@@ -235,3 +235,17 @@ h1 {
   display: flex;
   
 }
+
+.floating {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 5;
+  max-width: unset !important;
+  width: 100% !important;
+  transition: .3s !important;
+  transform: translateY(0) !important;
+  
+  &.open {
+    transform: translateY(100%) !important;
+  }
+}
